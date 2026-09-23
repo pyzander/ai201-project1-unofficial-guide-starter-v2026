@@ -102,20 +102,20 @@ def fallback_split(
 #     return fallback_split(documents)
 
 
-TITLE_MAX = 80   # a heading line, not a sentence
+TITLE_MAX = 80    # a heading line, not a sentence
+MIN_SPLIT = 350   # below this a document is already one coherent thought
 
 
 def split_documents(documents: list[Document]) -> list[Chunk]:
     # return fallback_split(documents)
     """
-    A document contains 1-3 paragraphs. 
-    Chunk = Heading + Paragraph. 
-    Adding the Heading to each paragraph allows the chunk to stand on its own. 
-    According to `python app.py index`, 183 chunks, 167 characters on average (shortest 63, longest 397)
+    A document contains 1-4 paragraphs.
+    Chunk = Heading + Paragraph, but only for documents over MIN_SPLIT.
+    Adding the Heading to each paragraph allows the chunk to stand on its own.
+    According to `python app.py index`, 138 chunks, 213 characters on average
+    (shortest 63, longest 397). 28 of the 88 documents get split.
 
-    One chunk per paragraph, with the document's heading carried onto each.
-
-    Followed fallback_split() as reference for writing this function 
+    Followed fallback_split() as reference for writing this function
 
     campus_life documents are a short heading followed by one to four
     paragraphs, and the fact that answers a question is usually a single
@@ -124,9 +124,16 @@ def split_documents(documents: list[Document]) -> list[Chunk]:
     outside class." names no course on its own, and four different courses
     have a near-identical line.
 
-    Short paragraphs are deliberately left alone rather than merged into their
-    neighbours. 124 of the 183 body paragraphs here are under 150 characters,
-    and the shortest of them are the most answerable chunks in the corpus.
+    MIN_SPLIT exists because splitting everything made retrieval worse on
+    "Which halls are quiet?". The seven housing *_noise.txt files each hold a
+    verdict paragraph plus a paragraph about the library being open until 2am
+    — and that second paragraph is byte-identical across all seven. Split
+    apart, the library paragraph embeds closer to the question than the
+    verdict does (rank 4 vs rank 13 for Tamsin Court), so the top five filled
+    with lures and the answer never reached the model. Kept whole, each file
+    is one chunk that carries its verdict. The seven affected files are
+    266-324 characters and the documents that genuinely need splitting start
+    at 396, so 350 sits in a measured gap rather than being a round number.
     """
     chunks: list[Chunk] = []
 
@@ -139,6 +146,9 @@ def split_documents(documents: list[Document]) -> list[Chunk]:
         )
         title = first if is_heading else ""
         bodies = blocks[1:] if is_heading else blocks
+
+        if len(doc.text) < MIN_SPLIT:
+            bodies = ["\n\n".join(bodies)]   # short document stays in one piece
 
         for index, body in enumerate(bodies):
             chunks.append(

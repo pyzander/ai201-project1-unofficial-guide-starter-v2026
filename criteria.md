@@ -91,7 +91,9 @@ Update while working on milestone 3: The criteria listed above was based on the 
 
 The source of the above information is from corpus_info.py BLURBS. 
 
+Update while working on milestone 4: 
 
+Later on I added a min_split size of 350 characters so documents under 350 characters would not be split. This  produced 138 chunks, 213 characters on average (shortest 63, longest 397)
 
 ---
 
