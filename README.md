@@ -51,12 +51,16 @@ python app.py ask "is the housing lottery random?"
 
 
 ```
+
 ## Chunking Strategy
 
-**Chunk size:**
-**Overlap:**
+For campus_life, I split on paragraphs instead of documents. According to `python app.py index`, 183 chunks, 167 characters on average (shortest 63, longest 397), produced by chunker.py::split_documents
+Because I know that a document is way under 800 characters and each document contains 1-4 paragraphs of a couple sentences each, bounding chunk size and overlap wasn't necessary. But if I did have one, perhaps 60 and and 10 would be good. The chunk size and overlap variables aren't really relevant for campus_life. I should have chose a different corpus. 
+<!-- 
+     **Chunk size:**
+     **Overlap:**
 
-<!-- What about YOUR documents made you pick these numbers? Short posts and
+     What about YOUR documents made you pick these numbers? Short posts and
      long sectioned guides don't want the same chunking, and "800 seemed
      reasonable" earns nothing. Point at something you noticed when you read
      the documents in Milestone 1.
@@ -65,6 +69,8 @@ python app.py ask "is the housing lottery random?"
      more than pretending you got it right first time.
 
      Milestone 3. -->
+
+
 
 ## Sample Chunks
 
@@ -79,41 +85,30 @@ python app.py ask "is the housing lottery random?"
 
 The below was produced by `python app.py chunks` which prints out 5 sample chunks and asks `For each one, ask: could someone answer a question using only this, without reading what came before or after?`. 
 
-======================================================================
-Chunk 1  |  source: admin_add_drop_deadline.txt#0  |  produced by: chunker.py::split_documents
-======================================================================
-On the add/drop deadline
+== Chunk 1  |  source: admin_add_drop_deadline.txt#0  |  produced by: 
+chunker.py::split_documents == On the add/drop deadline
 
 You can add a course through the end of the second week. Dropping is a longer window — through the end of week six — but a drop after week two shows as a W on your transcript. Nothing anywhere on the registrar's site says this plainly, and students find out from each other.
 
-======================================================================
-Chunk 2  |  source: course_cs_340_exams.txt#1  |  produced by: chunker.py::split_documents
-======================================================================
-CS 340 Databases — assessment
+== Chunk 2  |  source: course_cs_340_exams.txt#1  |  produced by: chun
+ker.py::split_documents == CS 340 Databases — assessment
 
 Start the term project in week three, not week eight; everyone learns this the hard way.
 
-======================================================================
-Chunk 3  |  source: course_phys_130_workload.txt#0  |  produced by: chunker.py::split_documents
-======================================================================
-Workload for PHYS 130 Mechanics
+== Chunk 3  |  source: course_phys_130_workload.txt#0  |  produced by:
+chunker.py::split_documents == Workload for PHYS 130 Mechanics
 
 People keep asking so: 7 hours a week, plus 3 on lab weeks. That's real time, not optimistic time.
 
-======================================================================
-Chunk 4  |  source: dining_verrill_street_grill_followup.txt#1  |  produced by: chunker.py::split_documents
-======================================================================
-Re: Verrill Street Grill
+== Chunk 4  |  source: dining_verrill_street_grill_followup.txt#1  |  
+produced by: chunker.py::split_documents == Re: Verrill Street Grill
 
 Also worth saying: one register, so the queue is a single line no matter how busy. Nobody tells you this at orientation.
 
-======================================================================
-Chunk 5  |  source: housing_morrow_house.txt#1  |  produced by: chunker.py::split_documents
-======================================================================
-Morrow House — what it's actually like
+== Chunk 5  |  source: housing_morrow_house.txt#1  |  produced by: chu
+nker.py::split_documents == Morrow House — what it's actually like
 
 The good: cheapest housing tier by about $900 a year, and the singles are real singles.
-
 
 ## Sample Answer
 
