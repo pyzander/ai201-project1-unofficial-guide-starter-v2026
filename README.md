@@ -110,16 +110,176 @@ nker.py::split_documents == Morrow House — what it's actually like
 
 The good: cheapest housing tier by about $900 a year, and the singles are real singles.
 
+
+Later changes in code (adding the Min_split into the function during milestone 4) produced these chunks: 
+```
+python app.py chunks
+138 chunks total. Showing 5, spread across the corpus.
+
+Paste these into your README under Sample Chunks. The rubric asks
+for the source file and the function that produced them — both are
+printed for you below.
+
+======================================================================
+Chunk 1  |  source: admin_add_drop_deadline.txt#0  |  produced by: chunker.py::split_documents
+======================================================================
+On the add/drop deadline
+
+You can add a course through the end of the second week. Dropping is a longer window — through the end of week six — but a drop after week two shows as a W on your transcript. Nothing anywhere on the registrar's site says this plainly, and students find out from each other.
+
+======================================================================
+Chunk 2  |  source: course_cs_340.txt#0  |  produced by: chunker.py::split_documents
+======================================================================
+CS 340 Databases
+
+I'm a junior and I've done this twice now. Format is lecture twice a week plus a project that runs the whole term. Assessment: one midterm and a final, both open-book. Lightly curved, usually two or three points.
+
+======================================================================
+Chunk 3  |  source: course_phys_130.txt#2  |  produced by: chunker.py::split_documents
+======================================================================
+PHYS 130 Mechanics
+
+The one piece of advice: the lab practical is worth 20% and almost nobody prepares for it.
+
+======================================================================
+Chunk 4  |  source: dining_verrill_street_grill_followup.txt#0  |  produced by: chunker.py::split_documents
+======================================================================
+Re: Verrill Street Grill
+
+Adding to what people have said about Verrill Street Grill. The wait figure of up to 30 minutes on Friday evenings matches what I've seen. If you're trying to eat between classes, go before 11:45 and it's a different building entirely.
+
+======================================================================
+Chunk 5  |  source: housing_innisfree_hall_noise.txt#0  |  produced by: chunker.py::split_documents
+======================================================================
+Noise levels in Innisfree Hall
+
+Asked about this a lot so writing it down. Moderate; the building is l-shaped and the short wing is much quieter.
+
+If you're someone who needs quiet to work, the library is open until 2am during term and that's what most people in this building end up doing.
+```
+
+## Milestone 4 commentary 
+Here is what  `python app.py ask "Which halls are quiet?"` when it uses chunker.py::split_documents (return fallback_split(documents) is commented out )
+```
+python app.py index
+python app.py ask "Which halls are quiet?"             
+  (best distance 0.362, cutoff 0.6)
+
+According to housing_innisfree_hall_noise.txt, Innisfree Hall has moderate noise levels, but the short wing of the l-shaped building is much quieter.
+
+Sources retrieved: housing_aldridge_hall_noise.txt, housing_fenwick_court_noise.txt, housing_innisfree_hall_noise.txt, housing_tamsin_court_noise.txt
+
+1 model calls this session, 438 tokens (401 in, 37 out)
+```
+
+The original code uses the chunker.py::fallback_split() 
+ (return fallback_split(documents) is NOT commented out )
+```
+python app.py index
+python app.py ask "Which halls are quiet?"
+  (best distance 0.370, cutoff 0.6)
+
+Based on the provided documents:
+- **Tamsin Court** is described as quiet structurally due to concrete floors between units (`housing_tamsin_court_noise.txt`).
+- **Aldridge Hall** has quiet floors on levels 3 and 4 that are genuinely enforced (`housing_aldridge_hall_noise.txt`).
+- **Innisfree Hall** is described as having moderate noise levels, with the short wing being much quieter (`housing_innisfree_hall_noise.txt`).
+
+Sources retrieved: housing_aldridge_hall_noise.txt, housing_fenwick_court_noise.txt, housing_innisfree_hall_noise.txt, housing_old_brewhouse_noise.txt, housing_tamsin_court_noise.txt
+
+1 model calls this session, 641 tokens (534 in, 107 out)
+```
+My above answer is incomplete as compared to the answer given orignally. Why is this the case? I wondered. 
+
+So I know `app.py` gives us `python app.py retrieve "question"    show distances, no answer (Milestone 4)`
+so I ran `python3 app.py retrieve "Which halls are quiet?"` and got 
+```
+Question: Which halls are quiet?
+
+#   distance   source                           preview
+----------------------------------------------------------------------------------------------------
+1   0.3623     housing_innisfree_hall_noise.txt Noise levels in Innisfree Hall  If you're someone wh...
+2   0.3876     housing_aldridge_hall_noise.txt  Noise levels in Aldridge Hall  If you're someone who...
+3   0.4106     housing_innisfree_hall_noise.txt Noise levels in Innisfree Hall  Asked about this a l...
+4   0.4478     housing_tamsin_court_noise.txt   Noise levels in Tamsin Court  If you're someone who ...
+5   0.4525     housing_fenwick_court_noise.txt  Noise levels in Fenwick Court  If you're someone who...
+
+Gate: best distance 0.362 is under the 0.6 cutoff
+
+Lower is better. 0.3 is a close match, 0.9 is unrelated.
+Milestone 4: run your five questions, then the five in OUT_OF_SCOPE
+that your documents clearly don't cover, and look for the gap
+between the two groups. Your cutoff goes in that gap.
+```
+This shows duplicate sources ate up my top-5 slows because top_k counts chunks which are now paragraphs instead of documents. 
+Under fallback_split, one document = one chunk, so five slots meant 5 different halls. 
+Each of my chunks carried less text. 
+My code is better at precise questiosn found in one sentence such as How many hours of work a week is CS 210 (distance of .3222 instead of .3713) instead of questions that cover multiple documents such as "Which halls are quiet?"
+
+The original code gave us: 
+```
+python3 app.py retrieve "Which halls are quiet?"
+
+Question: Which halls are quiet?
+
+#   distance   source                           preview
+----------------------------------------------------------------------------------------------------
+1   0.3703     housing_innisfree_hall_noise.txt Noise levels in Innisfree Hall  Asked about this a l...
+2   0.4023     housing_old_brewhouse_noise.txt  Noise levels in Old Brewhouse  Asked about this a lo...
+3   0.4316     housing_fenwick_court_noise.txt  Noise levels in Fenwick Court  Asked about this a lo...
+4   0.4343     housing_tamsin_court_noise.txt   Noise levels in Tamsin Court  Asked about this a lot...
+5   0.4524     housing_aldridge_hall_noise.txt  Noise levels in Aldridge Hall  Asked about this a lo...
+```
+Fortunately, my distance did get better which means retrieval got more precise. 
+
+`python3 app.py retrieve "Which halls are quiet?" --top-k 10`
+takes in more chunks 
+```
+python3 app.py retrieve "Which halls are quiet?" --top-k 16                  
+
+Question: Which halls are quiet?
+
+#   distance   source                           preview
+----------------------------------------------------------------------------------------------------
+1   0.3623     housing_innisfree_hall_noise.txt Noise levels in Innisfree Hall  If you're someone wh...
+2   0.3876     housing_aldridge_hall_noise.txt  Noise levels in Aldridge Hall  If you're someone who...
+3   0.4106     housing_innisfree_hall_noise.txt Noise levels in Innisfree Hall  Asked about this a l...
+4   0.4478     housing_tamsin_court_noise.txt   Noise levels in Tamsin Court  If you're someone who ...
+5   0.4525     housing_fenwick_court_noise.txt  Noise levels in Fenwick Court  If you're someone who...
+6   0.4526     housing_old_brewhouse_noise.txt  Noise levels in Old Brewhouse  Asked about this a lo...
+7   0.4558     housing_old_brewhouse_noise.txt  Noise levels in Old Brewhouse  If you're someone who...
+8   0.4633     housing_morrow_house_noise.txt   Noise levels in Morrow House  If you're someone who ...
+9   0.4734     housing_aldridge_hall_noise.txt  Noise levels in Aldridge Hall  Asked about this a lo...
+10  0.4743     housing_fenwick_court_noise.txt  Noise levels in Fenwick Court  Asked about this a lo...
+```
+I went from 88 chunks to 183. Top-5 was 5.7% of the corpus before; it's 2.7% now. I halved my chunk size and had to raise top-k to compensate.
+But when I asked "Which halls are quiet?" I noticed my answer didn't include - `**Tamsin Court** is quiet structurally due to concrete floors between units (`housing_tamsin_court_noise.txt`)`. and to include it, I would have to change my top_k from 10 to 13 to compensate. Raising it to 13 fixes it but it takes in noise and uses more tokens. 905 tokens (802 in, 103 out).
+Originally, it took in 642 tokens (534 in, 108 out)
+
+My second option is to split documents above a length threshold. The _noise files are short two-paragraph documents that were already coherent single chunks — splitting them gained nothing and cost the me the paragraph with the relevant information The 4-paragraph housing files genuinely needed splitting. A rule like "split only if the document exceeds N characters" keeps both behaviors. Noise files top out at 324, the four-paragraph files start at 396. A threshold at 350 separates them so I used that so files above that size would get split up into paragraphs and files below that size wouldn't. To adjust the top-k accordingly after this change, i changed the top-k to 8.
+
+```
+
 ## Sample Answer
 
 <!-- One complete question and answer, pasted as text, with the source line
      visible. Milestone 4. -->
+` python app.py ask "What do students say about CS 210?" `
 
 **Question:**
+What do students say about CS 210?
 
 **Answer:**
 
 ```
+(best distance 0.391, cutoff 0.6)
+
+Based on the provided documents, students say the following about CS 210:
+* You should do the labs even though they are only worth 10%, because the exams reuse the lab problems (*course_cs_210.txt* and *course_cs_210_exams.txt*).
+* You should expect 8 to 10 hours a week outside of class, which is "real time, not optimistic time," and the workload is front-loaded with the first month being heavier (*course_cs_210.txt* and *course_cs_210_workload.txt*).
+
+Sources retrieved: course_cs_210.txt, course_cs_210_exams.txt, course_cs_210_workload.txt, course_cs_340.txt, course_cs_340_exams.txt, course_engl_205.txt
+
+1 model calls this session, 789 tokens (654 in, 135 out)
 ```
 
 **My relevance cutoff:**
@@ -136,6 +296,26 @@ The good: cheapest housing tier by about $900 a year, and the singles are real s
 | Question | In corpus? | Best distance |
 | -------- | ---------- | ------------- |
 |          |            |               |
+| Which halls are quiet? | yes | 0.370 |
+| Which halls are loud? | yes | 0.422 |
+| What do students say about CS 210? | yes | 0.391 | 
+| What time is dinner served in dining halls? | yes | 0.385 |
+| What do students say about the libary? | yes | 0.496 | 
+
+| Question | In corpus? | Best distance |
+|---|---|---|
+| What is the capital of Mongolia? | No | 0.825 |
+| How do I change the oil in a diesel engine? | No | 0.923 |
+| Who won the 1994 World Cup? | No | 0.886 |
+| What is the recommended dosage of ibuprofen for a headache? | No | 0.849 |
+| How do I write a for loop in Rust? | No | 0.8635 |
+
+
+After changing the top-k, I tested the above, then I used that information to check the relevance cutoff. 
+The 0.6 is well placed but if I wanted to be more stringent, I can do 0.5. 
+
+
+
 
 ## How I Used AI
 
