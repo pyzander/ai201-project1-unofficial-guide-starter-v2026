@@ -28,6 +28,29 @@
 
      Milestone 5. -->
 
+i picked the corpus campus_life. As stated in corpus_info.py -> BLURBS, (or if you run `python app.py corpora`) That corpus contains "Short posts about student life. ~88 documents of 1–3 paragraphs." (Actually 7 documents contain 4 paragraphs: housing_aldridge_hall.txt, housing_calder_annexe.txt, housing_fenwick_court.txt, housing_innisfree_hall.txt, housing_morrow_house.txt, housing_old_brewhouse.txt, and housing_tamsin_court.txt.) such as The system answers questions on student life such as when to declare a major and thoughts on certain classes, dining halls and housing. 
+
+You can run this by doing 
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+
+pip install -r requirements.txt
+cp .env.example .env
+```
+
+This creates a virtual environment and your .env file. You need to add to .env your environment your Google Gemini Key which can be copied and pasted from https://aistudio.google.com/api-keys
+Then run `python test.py` to test the environment and then `python app.py index` and after that you can ask it questions like below. 
+
+```
+python test.py
+
+python app.py index
+python app.py ask "is the housing lottery random?"
+
+
+```
 ## Chunking Strategy
 
 **Chunk size:**
@@ -54,55 +77,43 @@
 
      Milestone 3. -->
 
-**Chunk 1** — source: ``corpora/advice_threads/documents/thread_bike_commute.txt`` `` — produced by: `` `` python app.py --corpus advice_threads chunks -n 1 ``
-```
-
-26 chunks total. Showing 1, spread across the corpus.
-
-Paste these into your README under Sample Chunks. The rubric asks
-for the source file and the function that produced them — both are
-printed for you below.
+The below was produced by `python app.py chunks` which prints out 5 sample chunks and asks `For each one, ask: could someone answer a question using only this, without reading what came before or after?`. 
 
 ======================================================================
-Chunk 1  |  source: thread_bike_commute.txt#0  |  produced by: chunker.py::fallback_split
+Chunk 1  |  source: admin_add_drop_deadline.txt#0  |  produced by: chunker.py::split_documents
 ======================================================================
-THREAD: Is a bike worth it for a 20 minute walk commute?
+On the add/drop deadline
 
---- reply 1 (14 votes) ---
-Yeah. Cuts an 18 minute walk to about 6. The thing nobody mentions is storage — covered bike parking exists at three buildings and is full by 9am at all three.
+You can add a course through the end of the second week. Dropping is a longer window — through the end of week six — but a drop after week two shows as a W on your transcript. Nothing anywhere on the registrar's site says this plainly, and students find out from each other.
 
---- reply 2 (9 votes) ---
-Counterpoint, I sold mine. Between November and March the paths are either icy or salted and salt destroys a drivetrain in one season.
+======================================================================
+Chunk 2  |  source: course_cs_340_exams.txt#1  |  produced by: chunker.py::split_documents
+======================================================================
+CS 340 Databases — assessment
 
---- reply 3 (22 votes) ---
-Both true. I keep a cheap bike for September to November and walk the rest of the year. Total cost was about $120 for the bike and I don't care what happens to it.
+Start the term project in week three, not week eight; everyone learns this the hard way.
 
---- reply 4 (5 votes) ---
-If you do get one, the campus does free registration and it's the only reason I got mine back after it was taken.
+======================================================================
+Chunk 3  |  source: course_phys_130_workload.txt#0  |  produced by: chunker.py::split_documents
+======================================================================
+Workload for PHYS 130 Mechanics
 
-For each one, ask: could someone answer a question using only this,
-without reading what came before or after?
-```
+People keep asking so: 7 hours a week, plus 3 on lab weeks. That's real time, not optimistic time.
 
-**Chunk 2** — source: `` — produced by: ``
+======================================================================
+Chunk 4  |  source: dining_verrill_street_grill_followup.txt#1  |  produced by: chunker.py::split_documents
+======================================================================
+Re: Verrill Street Grill
 
-```
-```
+Also worth saying: one register, so the queue is a single line no matter how busy. Nobody tells you this at orientation.
 
-**Chunk 3** — source: `` — produced by: ``
+======================================================================
+Chunk 5  |  source: housing_morrow_house.txt#1  |  produced by: chunker.py::split_documents
+======================================================================
+Morrow House — what it's actually like
 
-```
-```
+The good: cheapest housing tier by about $900 a year, and the singles are real singles.
 
-**Chunk 4** — source: `` — produced by: ``
-
-```
-```
-
-**Chunk 5** — source: `` — produced by: ``
-
-```
-```
 
 ## Sample Answer
 
@@ -144,7 +155,97 @@ without reading what came before or after?
 
 **1.**
 
+I asked Claude how to check the size of each chunk. This was before I reached that part in the readme. it said use 'python chunker.py	' It also said  "2. Per-chunk sizes There's nothing built in for this, so a one-liner. Let me run it on your corpus." And I let it run this bash command 
+
+```
+
+python3 -c "
+
+from ingest import load_documents
+
+from chunker import split_documents, describe
+
+chunks = split_documents(load_documents())
+
+print(describe(chunks)); print()
+
+for c in sorted(chunks, key=lambda c: len(c.text))[:5]:
+
+    print(f'{len(c.text):5d}  {c.label}')
+
+print('  ...')
+
+for c in sorted(chunks, key=lambda c: len(c.text))[-5:]:
+
+    print(f'{len(c.text):5d}  {c.label}')
+
+"
+
+```
+
+which produced 
+
+```
+
+88 chunks, 317 characters on average (shortest 178, longest 549), produced by chunker.py::fallback_split
+
+  178  course_hist_118_exams.txt#0
+
+  186  course_math_220_exams.txt#0
+
+  191  course_biol_160_exams.txt#0
+
+  194  course_phys_130_exams.txt#0
+
+  205  course_engl_205_exams.txt#0
+
+  ...
+
+  426  course_cs_340.txt#0
+
+  430  housing_calder_annexe.txt#0
+
+  461  housing_morrow_house.txt#0
+
+  516  housing_innisfree_hall.txt#0
+
+  549  housing_old_brewhouse.txt#0
+
+```
+
+It also said a bunch of super irrelevant considerations I didn't understand. 
+
+I wish it just told me to do `python app.py index`
+
 **2.**
+
+I asked Claude how to print out chunks. 
+
+It told me (part of the reply copied below):
+
+That prints 4 chunks spread across the corpus, each with its source label and the produced_by string — both of which the README's Sample Chunks section asks for.
+
+This doesn't need the index rebuilt. cmd_chunks calls load_documents() and split_documents() directly and never touches Chroma, so it reflects your new chunker right now. (app.py retrieve and app.py ask do need app.py index first, since those query the stored vectors.)
+
+Three variants:
+
+| Command                                                    | What you get                              |
+| ---------------------------------------------------------- | ----------------------------------------- |
+| python app.py chunks -n 10                                 | 10 chunks sampled across the whole corpus |
+| python app.py chunks --from-doc course_cs_210_workload.txt | every chunk from one document             |
+| python app.py chunks --indices 0,4,8                       | the chunks at those exact positions       |
+
+The --from-doc one is the most useful to you right now — it's how you show the before/after on a single document for Milestone 3. That file should now give you two chunks (#0 and #1) where the starter gave one, with the heading on both.
+
+For the size numbers rather than the text:
+
+python chunker.py
+
+That prints the one-line summary — count, mean, shortest, longest. You should see 183 chunks, 167 characters on average and produced by chunker.py::split_documents. If it still says 88 chunks or names fallback_split, the new code isn't being reached.
+
+I wish it plainly told me `python app.py chunks` as stated in RUNNING.md
+
+Honestly, I need to stop asking Claude how to run stuff because it overcomplicates it and it is easier to go look at RUNNING.md myself. I think since there are so many files, it doesn't know that the best place to look is RUNNING.md
 
 <!-- ── Stretch features ─────────────────────────────────────────────────────
      Doing one? Say so here BEFORE you start. A feature this README never

@@ -83,6 +83,16 @@ All chunk sizes should be above 150 characters.
 **Why this target:**
 You do not want the chunks to be too small and cut off sentences. And you want to ingest the entire document. The chunker chunks on documents for the campus_life corpus since campus_life according to 'python app.py corpora', the corpus contains short posts about student life that are 1-3 paragraphs each. 'python app.py index' states that the shortest document is 178 characters and longest is 549 characters. 
 
+Update while working on milestone 3: The criteria listed above was based on the a idea that a document is a chunk. It is before I really ran any code. Later, I changed a chunk size into heading + paragraph which changes the above and splits documents into chunks. I did this to address the ideas mentioned in 'python app.py corpora' which states 
+
+        "Short posts about student life. ~88 documents of 1–3 paragraphs. "
+
+        "Useful information usually sits in a single sentence."
+
+The source of the above information is from corpus_info.py BLURBS. 
+
+
+
 ---
 
 ## 5. The named source is the right source 

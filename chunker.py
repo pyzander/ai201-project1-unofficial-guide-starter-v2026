@@ -53,8 +53,8 @@ def fallback_split(
     Keep this function. Milestone 3's stop rule points back at it, and having
     something to compare your own strategy against is useful in unit 2.
     """
-    chunk_size = chunk_size or config.CHUNK_SIZE
-    overlap = overlap or config.CHUNK_OVERLAP
+    chunk_size = chunk_size or config.CHUNK_SIZE # 800 # defined in config.py # characters per chunk
+    overlap = overlap or config.CHUNK_OVERLAP # 120 # characters shared between neighbouring chunks
 
     if overlap >= chunk_size:
         raise ValueError("overlap has to be smaller than chunk_size")
@@ -80,6 +80,8 @@ def fallback_split(
     return chunks
 
 
+# ─── The starter's version of split_documents, kept for reference ───────────
+#
 def split_documents(documents: list[Document]) -> list[Chunk]:
     """
     Split documents into chunks. ⚠️ REPLACE THE BODY OF THIS IN MILESTONE 3.
@@ -98,6 +100,57 @@ def split_documents(documents: list[Document]) -> list[Chunk]:
         splitting on a character count?
     """
     return fallback_split(documents)
+
+
+TITLE_MAX = 80   # a heading line, not a sentence
+
+
+def split_documents(documents: list[Document]) -> list[Chunk]:
+    # return fallback_split(documents)
+    """
+    A document contains 1-3 paragraphs. 
+    Chunk = Heading + Paragraph. 
+    Adding the Heading to each paragraph allows the chunk to stand on its own. 
+    According to `python app.py index`, 183 chunks, 167 characters on average (shortest 63, longest 397)
+
+    One chunk per paragraph, with the document's heading carried onto each.
+
+    Followed fallback_split() as reference for writing this function 
+
+    campus_life documents are a short heading followed by one to four
+    paragraphs, and the fact that answers a question is usually a single
+    sentence. Splitting on the blank lines isolates that sentence. Prefixing
+    the heading is what makes it retrievable: "Expect 8 to 10 hours a week
+    outside class." names no course on its own, and four different courses
+    have a near-identical line.
+
+    Short paragraphs are deliberately left alone rather than merged into their
+    neighbours. 124 of the 183 body paragraphs here are under 150 characters,
+    and the shortest of them are the most answerable chunks in the corpus.
+    """
+    chunks: list[Chunk] = []
+
+    for doc in documents:
+        blocks = [b.strip() for b in doc.text.split("\n\n") if b.strip()]
+
+        first = blocks[0]
+        is_heading = (
+            len(blocks) > 1 and len(first) <= TITLE_MAX and not first.endswith(".")
+        )
+        title = first if is_heading else ""
+        bodies = blocks[1:] if is_heading else blocks
+
+        for index, body in enumerate(bodies):
+            chunks.append(
+                Chunk(
+                    text=f"{title}\n\n{body}" if title else body, # use ternary operator and include title with spacing if there is one and just body if there is no title  
+                    source=doc.source,
+                    index=index,
+                    produced_by="chunker.py::split_documents",
+                )
+            )
+
+    return chunks
 
 
 def describe(chunks: list[Chunk]) -> str:
