@@ -93,6 +93,7 @@ Keeping short documents whole fixes it, because the lure and the verdict stay in
 
 The below was produced by `python app.py chunks` which prints out 5 sample chunks and asks `For each one, ask: could someone answer a question using only this, without reading what came before or after?`. 
 
+```
 == Chunk 1  |  source: admin_add_drop_deadline.txt#0  |  produced by: 
 chunker.py::split_documents == On the add/drop deadline
 
@@ -118,7 +119,9 @@ nker.py::split_documents == Morrow House — what it's actually like
 
 The good: cheapest housing tier by about $900 a year, and the singles are real singles.
 
-Later changes in code (adding the Min_split into the function during milestone 4) produced these chunks: 
+```
+
+Later changes in code (adding the Min_split into the function during milestone 4) produced these chunks. (I kept the previous sample chunks above so you can see the differences in sample chunks) The above always produces one paragraph each while the below can have multiple paragraphs per chunk: 
 
 ```
 python app.py chunks

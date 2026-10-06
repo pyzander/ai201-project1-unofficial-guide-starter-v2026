@@ -27,7 +27,12 @@ contains the answer.
 <!-- e.g. "One of my questions is about a topic only two documents mention, so
      I expect that one to be hard." -->
 
-The question about the libary likely sits across several documents. 
+The question about the library likely sits across several documents. 
+
+**What to test:**
+
+For each question, test if a chunk contains the expected phrase. If so, it passes.  
+After testing all questions, if 4/5 pass, then it is 
 
 ---
 
@@ -60,13 +65,13 @@ in at least 4 of 5 tries.
 <!-- What did your distances look like when you set the cutoff in Milestone 4?
      Was there a clean gap, or did the two groups overlap? -->
 
-We do not want the system to be overconfident about answers not in the text. 
+We do not want the system to be overconfident about answers not in the text. If we look in `questions.py`, it has questions that are out of scope. One of the questions is `What is the recommended dosage of ibuprofen for a headache?` Though this is something a student would definitely want to know, it is not covered in the documents so we don't want it to be answered. We only want to retrieve what happens in the text such as info on housing and classes. 
 
 ---
 
 ## 4. Limit too small chunk size 
 
-All chunk sizes should be above 150 characters.
+All chunk sizes should be above 50 characters.
 
 <!-- YOU WRITE THIS ONE.
 
@@ -95,6 +100,8 @@ Update while working on milestone 4:
 
 Later on I added a min_split size of 350 characters so documents under 350 characters would not be split. This  produced 138 chunks, 213 characters on average (shortest 63, longest 397)
 
+The above used to say "All chunk sizes should be above 150 characters." Thus, I changed it to accomodate the new chunk sizes. 
+
 ---
 
 ## 5. The named source is the right source 
@@ -110,7 +117,7 @@ Later on I added a min_split size of 350 characters so documents under 350 chara
 For at least 4 of my 5 test questions, if it generates an answer, the document the answer names is one that actually contains the answer
 
 **Why this target:**
-Improving on criteria 2. I allow one miss because my workload question is the one where three plausible files are all in front of the model at once.
+Improving on criteria 2. I allow one miss because my workload question is the one where three plausible files are all in front of the model at once. 
 
 ---
 
