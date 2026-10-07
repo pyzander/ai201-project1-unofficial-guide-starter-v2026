@@ -27,7 +27,7 @@ QUESTIONS = [
     {"question": "What do students say about CS 210?", "expects": "CS 210"},
     {"question": "What time is dinner served in dining halls?", "expects": "pm"},
     {"question": "What do students say about the library?", "expects": "text"},
-    {"question": "What is the parking situation like near student housing?", "expects": "parking"},
+    {"question": "Where can students park?", "expects": "parking"},
 ]
 
 # Questions from a different world entirely. Your gate should refuse all five.

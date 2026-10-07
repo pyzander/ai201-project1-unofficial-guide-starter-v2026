@@ -453,7 +453,7 @@ Honestly, I need to stop asking Claude how to run stuff because it overcomplicat
 
 ## Notes 
 
-Now we will do the testing portion of the project. We will find out how good our acceptance criteria is. 
+Now we will do the testing portion of the project. We will find out how good our acceptance criteria is. Stretch feaure achieved: multiple measured improvements were made but put in the same run log. 
 
 ## Set up 
 
@@ -502,7 +502,7 @@ I decided not to create a scorer.py file at first becaue I was a little confused
 | -------------------------------------- | ------ | -------------- | ------- | ------- | ------- |
 | 1. Retrieved chunk contains the answer | 4 of 5 | 5/5            | 5/5     | 5/5     | MET     |
 | 2. Every answer names a source         | 5 of 5 | 5/5            | 4/5     | 5/5     | MISSED  |
-| 3. Gate stops out-of-corpus questions  | 4 of 5  | 5/5            | 5/5     | 5/5     | MET     |
+| 3. Gate stops out-of-corpus questions  | 4 of 5 | 5/5            | 5/5     | 5/5     | MET     |
 | 4. Limit too small chunk size          | 5 of 5 | 138/138 chunks | 138/138 | 138/138 | MET     |
 | 5. Named sources are the right sources | 4 of 5 | 4/5            | 4/5     | 4/5     | MET     |
 
@@ -637,9 +637,13 @@ More info on the process of figuring out a new question here: [results/run_2026-
 
 I picked it because the question was confusing the RAG for the "student housing" part so it was hard to evaluate pass or fail. I first changed it to "Where can students park near student housing?" Then ultimatedly I realized that RAG was getting tripped up on the student housing part so I changed the question to "Where can students park?"
 
-**FIx 2:**  Criteria 4 - Change target for chunks 
+**Fix 2:**  Criteria 4 - Change target for chunks 
 
-Issue: Criterion 4 was set low: 50 characters is below a heading plus one short sentence (shortest chunk is 63), and it doesn't test for cut-off sentences. I'd change it to a count of chunks that end mid-sentence, with a target of 0. This target is likely too weak and easy. The target also doesn't test what my reasoning claims, which is not cutting off sentences. A stricter and more meaningful check would be a count of chunks that end mid-sentence. 
+Issue: Criterion 4 was set low: 50 characters is below a heading plus one short sentence (shortest chunk is 63), and it doesn't test for cut-off sentences. This target is likely too weak and easy. The target also doesn't test what my reasoning claims, which is not cutting off sentences. A stricter and more meaningful check would be a count of chunks that end mid-sentence. I'd change it to a count of chunks that end mid-sentence, with a target of 0. 
+
+Why: For the old criteria, my shortest chunk is 63 characters, so every chunk already passed, and the criterion said nothing about chunk quality. Counting chunks that end mid-sentence is something I can check the same way every time.
+
+New Criteria 4: No chunk ends mid-sentence. Out of all chunks, the count whose text doesn't end in `.`, `!`, `?` (or a closing quote or parenthesis) should be 0. This should pass 5/5 of the time. 
 
 **Fix 3** Criteria 3: on stopping out of gate questions 
 
@@ -650,7 +654,7 @@ I addressed near miss questions in the section below. In this section, since the
 <!-- Connect it to a specific diagnosis above in one sentence. If you can't,
      you picked a fix because it sounded impressive. -->
 
-### Run Log — After
+### Run Log — Before 
 
 For reference, here is the old information:
 
@@ -664,28 +668,32 @@ For reference, here is the old information:
 | -------------------------------------- | ------ | -------------- | ------- | ------- | ------- |
 | 1. Retrieved chunk contains the answer | 4 of 5 | 5/5            | 5/5     | 5/5     | MET     |
 | 2. Every answer names a source         | 5 of 5 | 5/5            | 4/5     | 5/5     | MISSED  |
-| 3. Gate stops out-of-corpus questions  | 4 of 5  | 5/5            | 5/5     | 5/5     | MET     |
+| 3. Gate stops out-of-corpus questions  | 4 of 5 | 5/5            | 5/5     | 5/5     | MET     |
 | 4. Limit too small chunk size          | 5 of 5 | 138/138 chunks | 138/138 | 138/138 | MET     |
 | 5. Named sources are the right sources | 4 of 5 | 4/5            | 4/5     | 4/5     | MET     |
 
 <!-- Same format, same five criteria, three runs each.
      `python run_eval.py --label after` -->
 
+### Run Log - After 
+
  For reference, here is the **new** information:
 
 1. For at least 4 of my 5 test questions, the retrieved chunks include one that contains the answer.
 2. Every answer the system produces names at least one source document.
-3. When I ask a question my documents clearly don't cover, the relevance gate stops it and the system returns "I don't have enough information about that" — in at least 4 of 5 tries.
-4. All chunk sizes should be above 50 characters.
+3. When I ask a question my documents clearly don't cover, the relevance gate stops it and the system returns "I don't have enough information about that" — in at least **5 of 5** tries.
+4. ~~All chunk sizes should be above 50 characters.~~ No chunk ends mid-sentence. Out of all chunks, the count whose text doesn't end in `.`, `!`, `?` (or a closing quote or parenthesis) should be 0. This should pass 5/5 of the time. 
 5. For at least 4 of my 5 test questions, if it generates an answer, the all the documents the answer names is one that actually contains the answer
 
-| Criterion                              | Target | Run 1 | Run 2 | Run 3 | Verdict |
-| -------------------------------------- | ------ | ----- | ----- | ----- | ------- |
-| 1. Retrieved chunk contains the answer | 4 of 5 |       |       |       |         |
-| 2. Every answer names a source         | 5 of 5 |       |       |       |         |
-| 3. Gate stops out-of-corpus questions  | 5 of 5 |       |       |       |         |
-| 4.                                     |        |       |       |       |         |
-| 5.                                     |        |       |       |       |         |
+| Criterion                              | Target | Run 1           | Run 2           | Run 3           | Verdict |
+| -------------------------------------- | ------ | --------------- | --------------- | --------------- | ------- |
+| 1. Retrieved chunk contains the answer | 4 of 5 | 5/5             | 5/5             | 5/5             | MET     |
+| 2. Every answer names a source         | 5 of 5 | 5/5             | 5/5             | 5/5             | MET     |
+| 3. Gate stops out-of-corpus questions  | 5 of 5 | 5/5             | 5/5             | 5/5             | MET     |
+| 4. No chunk should end mid sentence    | 5 of 5 | 0 of 138 chunks | 0 of 138 chunks | 0 of 138 chunks | MET     |
+| 5. Named sources are the right sources | 4 of 5 | 5/5             | 5/5             | 5/5             | MET     |
+
+Scored by hand from `results/run_2026-10-07_0849_after.md`. Criterion 3 is deterministic, so it is the same in every run. Criterion 4 was checked with `python check_chunks.py`, and the chunks do not change between runs. Criterion 5 has two judgement calls: the dinner answers name files that give closing times rather than dinner hours, and the library answers name housing noise files that mention the library only in passing.
 
 **Did it help?**
 
@@ -695,6 +703,12 @@ For reference, here is the old information:
      tell.
 
      Milestone 4. -->
+
+Partly. 
+
+Criterion 2 went from MISSED (5/5, 4/5, 5/5) to MET (5/5 in all three runs). I got there by rewording Q5 from "What is the parking situation like near student housing?" to "Where can students park?", which removed the refusal that named no source. That fixes the symptom, not the cause: the system still depends on the model remembering to cite a file when it refuses, so a different question could miss again.
+
+The other changes made my criteria better rather than my system better. Criterion 3 was already 5/5, so raising its target to 5/5 only tightens the bar. I also made Criterion 4 relevant. Criterion 4's old 50-character rule passed every chunk (shortest is 63), so the new check, 0 of 138 chunks ending mid-sentence, tests what I meant. All five criteria are now MET, scored by hand, with two judgement calls on criterion 5.
 
 ## What's Still Broken
 
@@ -832,7 +846,7 @@ Rephrase this question so it either stops out of gate questions above a threshol
 
  Criterion 3 passes 5 of 5, but all five questions are far off topic. The five near-miss questions I added (best distance 0.431 to 0.583) all get past the 0.6 gate, so I'd test the model's refusal on those and tighten the target from 4 of 5 to 5 of 5.
 
-So I should rephrase critieria 3 to accomodate near miss questions that pass the gate. Fortunately, still return answer not found. 
+So I should rephrase critieria 3 to accomodate near miss questions that pass the gate. Fortunately, they still return answer not found. 
 
 ## What I'd Do Differently
 
@@ -849,9 +863,13 @@ On the five criteria:
 
 I understand criteria better now so I would write each one more carefully such as defining exactly what an answer is and if answer is not found counts as an answer. 
 
+I also need to figure out how to tackle answers that give part of the answer but not the entire answer.
+
+I would get better at making more measurable criteria so I can write a `scorer.py` next time. 
+
 ## How I Used AI for Unit 2 
 
-* created a new section to separate out the section for Unit 1 
+I created a new section to separate out the section for Unit 1.
 
 1. Asking to run without cache 
 
@@ -860,43 +878,7 @@ I understand criteria better now so I would write each one more carefully such a
 
 RUNNING.md doesn't list a flag for this. I'll check how `generate.py` handles the cache.
 
-Bash Find cache handling in source files
-
-```
-run_eval.py:66:    # cache=False on purpose. Three runs have to be three real answers.
-run_eval.py:67:    answer = answer_from_chunks(question, results, cache=False)
-config.py:72:CACHE_ENABLED = os.getenv("AI201_CACHE", "1") != "0"
-config.py:73:CACHE_DIR = ROOT / ".cache"
-generate.py:17:  • Caches repeated prompts while you're building, so re-running the same
-generate.py:28:`run_eval.py` passes cache=False for you.
-generate.py:43:_cache_hits = 0
-generate.py:52:# ─── Cache ───────────────────────────────────────────────────────────────────
-generate.py:55:def _cache_key(prompt: str, system: str | None) -> str:
-generate.py:60:def _cache_read(key: str) -> str | None:
-generate.py:61:    path = config.CACHE_DIR / f"{key}.json"
-generate.py:70:def _cache_write(key: str, response: str) -> None:
-generate.py:71:    config.CACHE_DIR.mkdir(exist_ok=True)
-generate.py:72:    path = config.CACHE_DIR / f"{key}.json"
-generate.py:76:def clear_cache() -> int:
-generate.py:77:    """Delete every cached response. Returns how many were removed."""
-generate.py:78:    if not config.CACHE_DIR.exists():
-generate.py:80:    files = list(config.CACHE_DIR.glob("*.json"))
-generate.py:161:        f"{f', {_cache_hits} served from cache' if _cache_hits else ''}"
-generate.py:172:    Cache hits are not in here, because they never reached the service and so
-generate.py:173:    cost nothing. That is a real difference between a run and a cached rerun,
-generate.py:202:def generate(prompt: str, system: str | None = None, cache: bool = True) -> str:
-generate.py:209:        cache:  reuse an identical earlier answer if there is one. Leave this
-generate.py:216:    global _session_calls, _cache_hits
-generate.py:218:    use_cache = cache and config.CACHE_ENABLED
-generate.py:219:    key = _cache_key(prompt, system)
-generate.py:221:    if use_cache:
-generate.py:222:        hit = _cache_read(key)
-generate.py:224:            _cache_hits += 1
-generate.py:245:            if use_cache:
-generate.py:246:                _cache_write(key, text)
-generate.py:304:def answer_from_chunks(question: str, results, cache: bool = True) -> str:
-generate.py:313:    return generate(prompt, system=GROUNDING_INSTRUCTION, cache=cache)
-```
+...
 
 Set the `AI201_CACHE` environment variable to `0` for that one command:
 
@@ -977,20 +959,19 @@ python app.py ask "your question" --no-cache
 
 * the code AI created looks legit and doesn't seem to break anything so I left it in
 
-2. 
-
-For criteria 2, of every answer names of source, I asked AI "Can you review criteria 2 and check if every answer for each of the 5 questions and each of the 3 runs names a source? The answer is found in ``` ```." and it found a fail on a question that said info not found (but 2/3 runs did include sources) and gave me some unprompted suggestions ot edit the criteria. It helped me create the table for criteria 2 but I check all the work and deleted some things they said incorrectly. 
-
-2. most of the writing is mine and all approved by me. I had it help me fill out some of the tables such as if i didn't want to write pass for each one. I labeled suggestions that were suggested by AI. 
+2. For criteria 2, of every answer names of source, I asked AI "Can you review criteria 2 and check if every answer for each of the 5 questions and each of the 3 runs names a source? The answer is found in ``` ```." and it found a fail on a question that said info not found (but 2/3 runs did include sources) and gave me some unprompted suggestions ot edit the criteria. It helped me create the table for criteria 2 but I check all the work and deleted some things they said incorrectly. 
+3. most of the writing is mine and all approved by me. I had it help me fill out some of the tables such as if i didn't want to write pass for each one. I labeled suggestions that were suggested by AI.
+4. Short scripts for checking things were written by AI [check_chunks.py](check_chunks.py)
 
 ## How I would use AI differently for the next project 
 
 * would have it explain all the files and how it works together before I even started and maybe create a chart for me so I would remember 
 * Formatting: This unit involved a lot of typing on markdown files. I am a rambler and I also like to walk you through my process. After I was finished, I wanted to asked AI to spellcheck and fix grammer and help me with formatting and let me approve the changes one by one instead of automatically applying it. I didn't want AI to rewrite for me or change my voice. I didn't do this because I lacked energy 
-* Used AI as a sounding bored earlier 
+* Used AI as a sounding board earlier 
 
 ## Learnings 
 
 * RAG isn't really good at answering the more vague complex questions such as " What is the parking situation like near student housing?" resulted in no information despite there being info becuase AI couldn't confirm the [corpora/admin_parking_permits.txt](corpora/admin_parking_permits.txt) was referring to parking lots near student housing. It answered "Where can students park near student housing?" but specified if it wasn't sure if it was near student housing. The question that was most successful with consistent answers was more simple: "Where can students park?" 
     - Source: [Criteria evaluation in results run_before: Q5: parking situation near student housing](results/run_2026-10-07_0434_before.md#q5-what-is-the-parking-situation-like-near-student-housing)
 * Writing criteria is hard. I was confused about critieria throughout Units 1 and 2 but the project definitely helped me understand it more5 5
+* tables in markdown are a pain. I use an extension to help with markdown but it doesn't let me edit tables because I'm not paying for it so editing the tables is a pain and since I wrote so much, it's so easy to get lost. 

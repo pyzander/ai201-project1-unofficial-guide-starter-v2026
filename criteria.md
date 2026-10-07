@@ -45,7 +45,7 @@ Every answer the system produces names at least one source document.
 <!-- Why all five and not four? What about your setup makes that achievable —
      or what would have to go wrong for it not to be? -->
 
-The source is grabbed when ingested in ingest.py line 20. The answer needs to be somewhere in the text for an answer to be produced. 
+The source is grabbed when ingested in ingest.py line 20. The answer needs to be somewhere in the text for an answer to be produced. That info is fed into `generate.py` which asks "Answer using only the documents above, and name the file you used. and includes "Name the document your answer came from, using the filename given in each excerpt."
 
 ---
 
@@ -66,6 +66,10 @@ in at least 4 of 5 tries.
      Was there a clean gap, or did the two groups overlap? -->
 
 We do not want the system to be overconfident about answers not in the text. If we look in `questions.py`, it has questions that are out of scope. One of the questions is `What is the recommended dosage of ibuprofen for a headache?` Though this is something a student would definitely want to know, it is not covered in the documents so we don't want it to be answered. We only want to retrieve what happens in the text such as info on housing and classes. 
+
+Edit: 
+
+After running the test log, I saw that the threshold is .6 and the Out-of-scope questions are all around .8 so they are all refused. 4 of 5 target being easy to pass. I should be stricter and say 5/5. 
 
 ---
 
@@ -102,6 +106,10 @@ Later on I added a min_split size of 350 characters so documents under 350 chara
 
 The above used to say "All chunk sizes should be above 150 characters." Thus, I changed it to accomodate the new chunk sizes. 
 
+**UNIT 2 edit** : No chunk ends mid-sentence. Out of all chunks, the count whose text doesn't end in `.`, `!`, `?` (or a closing quote or parenthesis) should be 0. This should pass 5/5 of the time. 
+
+This edit satisfies the above reasoning. See more info and logic in readme [README.md#the-improvement](README.md#the-improvement)
+
 ---
 
 ## 5. The named sources are the right sources
@@ -117,9 +125,8 @@ The above used to say "All chunk sizes should be above 150 characters." Thus, I 
 For at least 4 of my 5 test questions, if it generates an answer, the all the documents the answer names is one that actually contains the answer
 
 **Why this target:**
-Improving on criteria 2. I allow one miss because my workload question is the one where three plausible files are all in front of the model at once. I had 4/5 instead of 5/5 because something the answer is in one document so there lists additional irrelevant documents after. I'm very curious about this one because i feel like I may not pass on this because of of that 
-
----
+Improving on criteria 2. I allow one miss because my workload question is the one where three plausible files are all in front of the model at once. I had 4/5 instead of 5/5 because something the answer is in one document so there lists additional irrelevant documents after; because of this I'm very curious about this one because i feel like I may not pass and I feel like I may not but I do not want to make the criteria less stringent. \
+Later we will discover: Is the problem with the measurement, or with the result?
 
 <!-- ─────────────────────────────────────────────────────────────────────────
      UNIT 2 — read this before you change anything above.

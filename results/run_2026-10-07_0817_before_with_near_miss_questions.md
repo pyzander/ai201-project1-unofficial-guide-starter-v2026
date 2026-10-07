@@ -11,13 +11,15 @@ This table is one row per QUESTION. The run log your README asks for is
 one row per CRITERION, so aggregate these into it — criterion 1 is how many
 of your questions had the answer in the retrieved chunks, and so on.
 
-| Question | Run 1 | Run 2 | Run 3 |
-|---|---|---|---|
-| What time does the gym close? |   |   |   |
-| How much does a meal plan cost? |   |   |   |
-| What do students say about CS 999? |   |   |   |
-| What are the library hours on Sundays? |   |   |   |
-| What are the available clubs to join? |   |   |   |
+| Question                               | Run 1 | Run 2 | Run 3 |
+| -------------------------------------- | ----- | ----- | ----- |
+| What time does the gym close?          | Pass* | Pass* | Pass* |
+| How much does a meal plan cost?        | Pass* | Pass* | Pass* |
+| What do students say about CS 999?     | Pass* | Pass* | Pass* |
+| What are the library hours on Sundays? | Pass* | Pass* | Pass* |
+| What are the available clubs to join?  | Pass* | Pass* | Pass* |
+
+\*Caveat: all five near-miss questions got past the relevance gate (refused 0 of 5), but the model correctly said it didn't have enough information, so they pass on the answer rather than the gate.
 
 > The Run columns are blank because `scorer.py` doesn't exist yet.
 > Judge each question yourself by reading the output below, or build
@@ -33,13 +35,13 @@ Retrieval is deterministic and the gate is a comparison against a
 fixed number, so these do not vary between runs — one pass over the
 list is the whole measurement.
 
-| Out-of-scope question | Best distance | Gate |
-|---|---|---|
-| What time does the gym close? | 0.457 | **let through** |
-| How much does a meal plan cost? | 0.548 | **let through** |
-| What do students say about CS 999? | 0.491 | **let through** |
-| What are the library hours on Sundays? | 0.431 | **let through** |
-| What are the available clubs to join? | 0.583 | **let through** |
+| Out-of-scope question                  | Best distance | Gate            |
+| -------------------------------------- | ------------- | --------------- |
+| What time does the gym close?          | 0.457         | **let through** |
+| How much does a meal plan cost?        | 0.548         | **let through** |
+| What do students say about CS 999?     | 0.491         | **let through** |
+| What are the library hours on Sundays? | 0.431         | **let through** |
+| What are the available clubs to join?  | 0.583         | **let through** |
 
 ---
 
