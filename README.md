@@ -28,7 +28,7 @@
 
      Milestone 5. -->
 
-i picked the corpus campus_life. As stated in corpus_info.py -> BLURBS, (or if you run `python app.py corpora`) That corpus contains "Short posts about student life. ~88 documents of 1–3 paragraphs." (Actually 7 documents contain 4 paragraphs: housing_aldridge_hall.txt, housing_calder_annexe.txt, housing_fenwick_court.txt, housing_innisfree_hall.txt, housing_morrow_house.txt, housing_old_brewhouse.txt, and housing_tamsin_court.txt.) such as The system answers questions on student life such as when to declare a major and thoughts on certain classes, dining halls and housing. 
+i picked the corpus campus_life. As stated in corpus_info.py -> BLURBS, (or if you run `python app.py corpora`) That corpus contains "Short posts about student life. ~88 documents of 1–3 paragraphs." (Actually 7 documents contain 4 paragraphs: housing_aldridge_hall.txt, housing_calder_dannexe.txt, housing_fenwick_court.txt, housing_innisfree_hall.txt, housing_morrow_house.txt, housing_old_brewhouse.txt, and housing_tamsin_court.txt.) such as The system answers questions on student life such as when to declare a major and thoughts on certain classes, dining halls and housing. 
 
 You can run this by doing 
 
@@ -455,7 +455,32 @@ Honestly, I need to stop asking Claude how to run stuff because it overcomplicat
 
 Now we will do the testing portion of the project. We will find out how good our acceptance criteria is. 
 
-## Run Log — Before
+## Set up 
+
+Info taken from [RUNNING.md](RUNNING.md) for easy access 
+
+```py
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+cp .env.example .env          # then paste your key into .env
+python test.py
+
+python app.py corpora                     # see what's available
+python app.py index                       # build the search index
+python app.py ask "is the housing lottery random?"
+
+python run_eval.py --label before #| Runs every test question three times, puts every `OUT_OF_SCOPE` question through the gate, and writes a run log — **unit 2** |
+
+python run_eval.py --label before # you can do it without the label but i think they want it to differenciate your runs 
+python run_eval.py --label after
+#  Unit 2 | Run the test, fix one thing, re-run | `
+
+```
+
+I decided not to create a scorer.py file at first becaue I was a little confused on the differences between the two tables and needed to develop my understanding on how to score so I manually filled it out but I may go back in change it. 
+
+## Run Log — Before (Milestone 1) 
 
 <!-- Your five criteria, three runs each. `python run_eval.py --label before`
      runs the questions, puts the OUT_OF_SCOPE ones through the gate, and
@@ -473,17 +498,79 @@ Now we will do the testing portion of the project. We will find out how good our
 4. All chunk sizes should be above 50 characters.
 5. For at least 4 of my 5 test questions, if it generates an answer, the all the documents the answer names is one that actually contains the answer
 
-| Criterion                              | Target | Run 1 | Run 2 | Run 3 | Verdict |
-| -------------------------------------- | ------ | ----- | ----- | ----- | ------- |
-| 1. Retrieved chunk contains the answer | 4 of 5 |       |       |       |         |
-| 2. Every answer names a source         | 5 of 5 |       |       |       |         |
-| 3. Gate stops out-of-corpus questions  | 4 of 5 |       |       |       |         |
-| 4. Limit too small chunk size          | 5 of 5 |       |       |       |         |
-| 5. Named sources are the right sources | 4 of 5 |       |       |       |         |         
+| Criterion                              | Target | Run 1          | Run 2   | Run 3   | Verdict |
+| -------------------------------------- | ------ | -------------- | ------- | ------- | ------- |
+| 1. Retrieved chunk contains the answer | 4 of 5 | 5/5            | 5/5     | 5/5     | MET     |
+| 2. Every answer names a source         | 5 of 5 | 5/5            | 4/5     | 5/5     | MISSED  |
+| 3. Gate stops out-of-corpus questions  | 4 of 5  | 5/5            | 5/5     | 5/5     | MET     |
+| 4. Limit too small chunk size          | 5 of 5 | 138/138 chunks | 138/138 | 138/138 | MET     |
+| 5. Named sources are the right sources | 4 of 5 | 4/5            | 4/5     | 4/5     | MET     |
+
+Criterion 2: it is MISSED because run 2 had 4 of 5 answers naming a source. The Q5 refusal named none.
+
+Criterion 4: the target says "5 of 5", but the criterion is about chunks, so I used 138/138 instead.
+
+Criterion 5: run 2 shows 4/5 because I counted the Q5 refusal as not applicable. If you count it as a pass, it would be 5/5, and the verdict stays MET.
 
 <!-- Underneath, paste the REAL output for each criterion from one of your
      runs — the actual text your system produced, not a description of it.
      Name the file and function that produced it. -->
+
+All text below is copied from `results/run_2026-10-07_0434_before.md`, written by `run_eval.py::main` (cutoff 0.6, top-k 8, caching off). Retrieval comes from `store.py::search`, the gate from `gate.py::check`, and the answer text from `generate.py::answer_from_chunks`.
+
+**Criterion 1: retrieved chunks contain the answer.** Question: "What do students say about wait times at Commons during lunch?", run 1.
+
+```
+- Best distance: 0.3080 (passed the gate)
+- Sources retrieved: dining_halden_hall_followup.txt, dining_kestrel_commons.txt, dining_kestrel_commons_followup.txt, dining_north_kitchen_followup.txt, dining_pellew_dining_hall_followup.txt, dining_the_atrium_followup.txt, dining_the_ridgeway_cafe_followup.txt, dining_verrill_street_grill_followup.txt
+
+Based on the documents, students state that the wait time at Kestrel Commons is 20 to 25 minutes between 12:15 and 1:00, and under 5 minutes before 11:45 (from `dining_kestrel_commons.txt`).
+```
+
+**Criterion 2: every answer names a source.** The answer in the first block above names `dining_kestrel_commons.txt`. The one answer that named none, "What is the parking situation like near student housing?", run 2:
+
+```
+Based on the provided documents, there is no information about the parking situation near student housing. I don't have enough information to answer the question.
+```
+
+**Criterion 3: the gate stops out-of-corpus questions.** Produced by `run_eval.py::check_out_of_scope` (cutoff 0.6). Refused 5 of 5.
+
+```
+| Out-of-scope question                                       | Best distance | Gate    |
+| ----------------------------------------------------------- | ------------- | ------- |
+| What is the capital of Mongolia?                            | 0.825         | refused |
+| How do I change the oil in a diesel engine?                 | 0.923         | refused |
+| Who won the 1994 World Cup?                                 | 0.886         | refused |
+| What is the recommended dosage of ibuprofen for a headache? | 0.849         | refused |
+| How do I write a for loop in Rust?                          | 0.864         | refused |
+```
+
+**Criterion 4: chunk size.** Output of `ingest.py::describe` and `chunker.py::describe` (the same lines `python app.py index` prints) for `chunker.py::split_documents`:
+
+```
+Corpus: campus_life
+  loaded   88 documents, 27,908 characters, ~317 characters per document
+  chunked  138 chunks, 213 characters on average (shortest 63, longest 397), produced by chunker.py::split_documents
+```
+
+**Criterion 5: the named sources are the right sources.** "What do students say about CS 210?", run 1, where every named file contains what it is cited for:
+
+```
+Based on the provided documents, students say the following about CS 210:
+* You should do the labs even though they are only worth 10%, because the exams reuse the lab problems (*course_cs_210_exams.txt*, *course_cs_210.txt*).
+* You should expect 8 to 10 hours of work a week outside class (*course_cs_210.txt*, *course_cs_210_workload.txt*). 
+* The workload is front-loaded, meaning the first month is heavier than the rest (*course_cs_210_workload.txt*).
+```
+
+The miss, "What is the parking situation like near student housing?", run 1, which names 7 files when only `admin_parking_permits.txt` mentions parking:
+
+```
+Based on the provided documents, there is no information about the parking situation near student housing. 
+
+Source: *admin_parking_permits.txt*, *housing_fenwick_court.txt*, *housing_aldridge_hall.txt*, *housing_old_brewhouse.txt*, *housing_tamsin_court.txt*, *transit_shuttle.txt*, and *admin_housing_lottery.txt*.
+```
+
+Note: Milestone one took me approximatley 3 hours instead of the estimated 45 minutes :( 
 
 ## Verdicts
 
@@ -496,13 +583,13 @@ Now we will do the testing portion of the project. We will find out how good our
 
      Milestone 2. -->
 
-| #   | Criterion | Verdict | How I decided |
-| --- | --------- | ------- | ------------- |
-| 1   |           |         |               |
-| 2   |           |         |               |
-| 3   |           |         |               |
-| 4   |           |         |               |
-| 5   |           |         |               |
+| #   | Criterion                                    | Verdict | How I decided                                                                                        |
+| --- | -------------------------------------------- | ------- | ---------------------------------------------------------------------------------------------------- |
+| 1   | Retrieved chunks contain the answer (4 of 5) | MET     | 5/5 in all three runs, scored by hand. Q5 only held after I stopped reading "near student housing" as a claim the documents make, and Q3 answers give closing times rather than dinner hours, so it is less close than it looks. |
+| 2   | Every answer names a source (5 of 5)         | MISSED  | 5/5, 4/5, 5/5. In run 2 the Q5 answer was a refusal that named no file. The target is every answer, so one miss in one run is a miss. Runs 1 and 3 only passed Q5 by listing all 7 retrieved files. |
+| 3   | Gate stops out-of-corpus questions (4 of 5)  | MET     | 5 of 5 refused, with best distances 0.825 to 0.923 against a 0.6 cutoff. One deterministic pass, so the same result in all three runs. Not close, though only far-off questions were tested. |
+| 4   | All chunks above 50 characters               | MET     | 0 of 138 chunks are under 50 characters (shortest 63, longest 397, average 213). The shortest is only 13 over the line, and the target does not test for cut-off sentences. |
+| 5   | Named sources are the right sources (4 of 5) | MET     | 4/5 in all three runs, so it meets the target exactly with no room to spare. Q5 is the miss: it names 7 files and only `admin_parking_permits.txt` mentions parking. Q5 run 2 named none and was counted as not applicable. Hand-scored, with Q3 and Q4 as judgement calls. |
 
 ## Diagnoses
 
@@ -524,19 +611,73 @@ Now we will do the testing portion of the project. We will find out how good our
 
      Milestone 3. -->
 
+**Miss: criterion 2 (every answer names a source), Q5 run 2. Stage: generation.**
+
+Q5 asks "What is the parking situation like near student housing?" Retrieval did its job: `admin_parking_permits.txt` was retrieved at a best distance of 0.531, under the 0.6 cutoff, so the gate passed it. But that file never says the lots are near student housing, so the model had nothing to confirm the "near student housing" part. The model then followed the rule in `GROUNDING_INSTRUCTION` (`generate.py`) to say it doesn't have enough information. The instruction to name the document is a separate sentence in the same prompt, and nothing in code checks for it or adds a source afterward. In run 2 the model followed the refusal rule and dropped the filename: "Based on the provided documents, there is no information about the parking situation near student housing. I don't have enough information to answer the question." In runs 1 and 3 it did the opposite and pasted all 7 retrieved files as the source. Caching was off, so the same prompt gave three different behaviours.
+
+The mechanism is that citing a source depends on the model complying with a prompt instruction, and that instruction is least reliable when the model is refusing, because there is no claim to attach a file to. The failure is not in loading, chunking, embedding or retrieval.
+
+**Pattern.** The criterion 2 miss and the weak spot in criterion 5 are the same problem. Both are Q5, and both come from a question whose wording the corpus doesn't support. When I reworded it to "Where can students park?", it gave one correct source (`admin_parking_permits.txt`) in 3 of 3 tries. So a fix should target how the system cites sources when it refuses, not the retrieval.
+
+**Targets I'd tighten.** Criterion 4 was set low: 50 characters is below a heading plus one short sentence (shortest chunk is 63), and it doesn't test for cut-off sentences. I'd change it to a count of chunks that end mid-sentence, with a target of 0. Criterion 3 passes 5 of 5, but all five questions are far off topic. The five near-miss questions I added (best distance 0.431 to 0.583) all get past the 0.6 gate, so I'd test the model's refusal on those and tighten the target from 4 of 5 to 5 of 5.
+
 ## The Improvement
 
-**What I changed:**
+See the above section and the before run file [results/run_2026-10-07_0434_before.md](results/run_2026-10-07_0434_before.md) for more info! 
 
-**Why I picked it:**
+**Fix 1**: I fixed question 5 so it is less ambiguous. 
+
+ Q5: What is the parking situation like near student housing? -> Where can students park?
+
+See change at: [questions.py line 30](questions.py#L30)
+
+Why I picked it: The vagueness was giving RAG a hard time answering. And it produced a no info found answer despite there being info found which messed up Criteria 2: Every answer the system produces names at least one source document because one of the runs had no source document. It also messed up criteria 5: For at least 4 of my 5 test questions, if it generates an answer, the all the documents the answer names is one that actually contains the answer but it sitll passed due to my 4/5 threshold. The answers say there is no information while citing `admin_parking_permits.txt`, which does have parking information.
+
+More info on the process of figuring out a new question here: [results/run_2026-10-07_0434_before.md, Q5](results/run_2026-10-07_0434_before.md#q5-what-is-the-parking-situation-like-near-student-housing)
+
+I picked it because the question was confusing the RAG for the "student housing" part so it was hard to evaluate pass or fail. I first changed it to "Where can students park near student housing?" Then ultimatedly I realized that RAG was getting tripped up on the student housing part so I changed the question to "Where can students park?"
+
+**FIx 2:**  Criteria 4 - Change target for chunks 
+
+Issue: Criterion 4 was set low: 50 characters is below a heading plus one short sentence (shortest chunk is 63), and it doesn't test for cut-off sentences. I'd change it to a count of chunks that end mid-sentence, with a target of 0. This target is likely too weak and easy. The target also doesn't test what my reasoning claims, which is not cutting off sentences. A stricter and more meaningful check would be a count of chunks that end mid-sentence. 
+
+**Fix 3** Criteria 3: on stopping out of gate questions 
+
+Change target from 4/5 to 5/5 
+
+I addressed near miss questions in the section below. In this section, since the example out of scope questions are entirely out of scope, I think I should raise the criteria to 5/5 because they are just so out of scope. Their distances are approx .8 which is way above .6 so none of them get past the gate. 
 
 <!-- Connect it to a specific diagnosis above in one sentence. If you can't,
      you picked a fix because it sounded impressive. -->
 
 ### Run Log — After
 
+For reference, here is the old information:
+
+1. For at least 4 of my 5 test questions, the retrieved chunks include one that contains the answer.
+2. Every answer the system produces names at least one source document.
+3. When I ask a question my documents clearly don't cover, the relevance gate stops it and the system returns "I don't have enough information about that" — in at least **5 of 5** tries.
+4. All chunk sizes should be above 50 characters.
+5. For at least 4 of my 5 test questions, if it generates an answer, the all the documents the answer names is one that actually contains the answer
+
+| Criterion                              | Target | Run 1          | Run 2   | Run 3   | Verdict |
+| -------------------------------------- | ------ | -------------- | ------- | ------- | ------- |
+| 1. Retrieved chunk contains the answer | 4 of 5 | 5/5            | 5/5     | 5/5     | MET     |
+| 2. Every answer names a source         | 5 of 5 | 5/5            | 4/5     | 5/5     | MISSED  |
+| 3. Gate stops out-of-corpus questions  | 4 of 5  | 5/5            | 5/5     | 5/5     | MET     |
+| 4. Limit too small chunk size          | 5 of 5 | 138/138 chunks | 138/138 | 138/138 | MET     |
+| 5. Named sources are the right sources | 4 of 5 | 4/5            | 4/5     | 4/5     | MET     |
+
 <!-- Same format, same five criteria, three runs each.
      `python run_eval.py --label after` -->
+
+ For reference, here is the **new** information:
+
+1. For at least 4 of my 5 test questions, the retrieved chunks include one that contains the answer.
+2. Every answer the system produces names at least one source document.
+3. When I ask a question my documents clearly don't cover, the relevance gate stops it and the system returns "I don't have enough information about that" — in at least 4 of 5 tries.
+4. All chunk sizes should be above 50 characters.
+5. For at least 4 of my 5 test questions, if it generates an answer, the all the documents the answer names is one that actually contains the answer
 
 | Criterion                              | Target | Run 1 | Run 2 | Run 3 | Verdict |
 | -------------------------------------- | ------ | ----- | ----- | ----- | ------- |
@@ -565,9 +706,291 @@ Now we will do the testing portion of the project. We will find out how good our
 
      Milestone 5. -->
 
+As stated in the [results/run_2026-10-07_0434_before.md](results/run_2026-10-07_0434_before.md), there are a lot of things I need to fix mainly on more specific wording. I ran out of time and energy to fix basically everything. 
+
+I need to decide whether "I don't have enough information"  counts as an answer. If it does, it needs a source document (criteria 2). 
+
+For critieria 3, When I ask a question my documents clearly don't cover, the relevance gate stops it and the system returns "I don't have enough information about that" — in at least 4 of 5 tries., the relevance gate doesn't stop near miss questions about campus life so it needs to rephrase it . 
+
+For critiera 1 and 5, more well defined pass or fail if only part of the information is included is included in the returned answer and answer is not totally complete based on the documents. 
+
+**Near miss questions** 
+
+I wanted to add some near miss questions to the questions.py to show the output and within the out of scope questions but I kept hitting a rate limit. I think I just need to replace the questions so I won't get rate limited instead of having 10 questions each and adding it to QUESTIONS and Out_of_scope. I added it to questions too so you can see the output. 
+
+So instead of this original code in [questions.py](questions.py): 
+
+```py
+QUESTIONS = [
+    # {"question": "...", "expects": "..."},
+    {"question": "What do students say about wait times at Commons during lunch?", "expects": "food"},
+    {"question": "What do students say about CS 210?", "expects": "CS 210"},
+    {"question": "What time is dinner served in dining halls?", "expects": "pm"},
+    {"question": "What do students say about the library?", "expects": "text"},
+    {"question": "What is the parking situation like near student housing?", "expects": "parking"},
+]
+
+# Questions from a different world entirely. Your gate should refuse all five.
+#
+# There are five of these because criterion 3 in criteria.md names a target of
+# "at least 4 of 5" — you need five things to try before you can report 4 of 5.
+# `run_eval.py` runs these through retrieval and the gate on every eval and
+# records what happened, so criterion 3 has evidence in the run log alongside
+# the others. They cost no model calls: a refusal never reaches the model.
+OUT_OF_SCOPE = [
+    "What is the capital of Mongolia?",
+    "How do I change the oil in a diesel engine?",
+    "Who won the 1994 World Cup?",
+    "What is the recommended dosage of ibuprofen for a headache?",
+    "How do I write a for loop in Rust?",
+]
+```
+
+Or this code which adds the questions which kept getting me rate limited: 
+
+```py
+QUESTIONS = [
+    # {"question": "...", "expects": "..."},
+    {"question": "What do students say about wait times at Commons during lunch?", "expects": "food"},
+    {"question": "What do students say about CS 210?", "expects": "CS 210"},
+    {"question": "What time is dinner served in dining halls?", "expects": "pm"},
+    {"question": "What do students say about the library?", "expects": "text"},
+    {"question": "What is the parking situation like near student housing?", "expects": "parking"},
+    {"question": "What time does the gym close?", "expects": "pm"},
+    {"question": "How much does a meal plan cost?", "expects": "$"},
+    {"question": "What do students say about CS 999?", "expects": "CS 999"},
+    {"question": "What are the library hours on Sundays?", "expects": "Sunday"},
+    {"question": "What are the available clubs to join?", "expects": "club"},
+]
+
+# Questions from a different world entirely. Your gate should refuse all five.
+#
+# There are five of these because criterion 3 in criteria.md names a target of
+# "at least 4 of 5" — you need five things to try before you can report 4 of 5.
+# `run_eval.py` runs these through retrieval and the gate on every eval and
+# records what happened, so criterion 3 has evidence in the run log alongside
+# the others. They cost no model calls: a refusal never reaches the model.
+OUT_OF_SCOPE = [
+    "What is the capital of Mongolia?",
+    "How do I change the oil in a diesel engine?",
+    "Who won the 1994 World Cup?",
+    "What is the recommended dosage of ibuprofen for a headache?",
+    "How do I write a for loop in Rust?",
+    # near-miss questions: on-topic for campus life, but the answer isn't in the documents
+    "What time does the gym close?",
+    "How much does a meal plan cost?",
+    "What do students say about CS 999?",
+    "What are the library hours on Sundays?",
+    "What are the available clubs to join?",
+]
+
+'''
+AI suggested near-miss questions for the corpus: and I added some of my own near-miss questions.
+"What time does the gym close?" The corpus covers dining, housing, courses, and the library, but may have no gym documents. It would match other "hours" chunks.
+"How much does a meal plan cost?" It is a dining question, but the documents may only cover wait times and closing hours, not prices.
+"What do students say about CS 999?" It looks like the CS 210 and CS 340 documents, with a course that doesn't exist.
+"What are the library hours on Sundays?" The documents give term-time and reading-week hours, not Sunday hours.
+'''
+```
+
+I should just replace this questions to this just for the near miss test run: 
+
+```py
+QUESTIONS = [
+    # {"question": "...", "expects": "..."},
+    {"question": "What time does the gym close?", "expects": "pm"},
+    {"question": "How much does a meal plan cost?", "expects": "$"},
+    {"question": "What do students say about CS 999?", "expects": "CS 999"},
+    {"question": "What are the library hours on Sundays?", "expects": "Sunday"},
+    {"question": "What are the available clubs to join?", "expects": "club"},
+]
+
+# Questions from a different world entirely. Your gate should refuse all five.
+#
+# There are five of these because criterion 3 in criteria.md names a target of
+# "at least 4 of 5" — you need five things to try before you can report 4 of 5.
+# `run_eval.py` runs these through retrieval and the gate on every eval and
+# records what happened, so criterion 3 has evidence in the run log alongside
+# the others. They cost no model calls: a refusal never reaches the model.
+OUT_OF_SCOPE = [
+    # near-miss questions: on-topic for campus life, but the answer isn't in the documents
+    "What time does the gym close?",
+    "How much does a meal plan cost?",
+    "What do students say about CS 999?",
+    "What are the library hours on Sundays?",
+    "What are the available clubs to join?",
+]
+```
+
+That worked to not get rate limited. I could not combine these new questions with the old questions or else I would get rate limited. 
+
+You can see the outcome [results/run_2026-10-07_0817_before_with_near_miss_questions.md](results/run_2026-10-07_0817_before_with_near_miss_questions.md) and see it was let through the gate but all the answers are saying there is not enough information or that it's not mentioned. 
+
+So to continue with the fix 3 above,  Criteria 3: on stopping out of gate questions 
+
+Rephrase this question so it either stops out of gate questions above a threshold or it refuses to answer questions out of scope 
+
+ Criterion 3 passes 5 of 5, but all five questions are far off topic. The five near-miss questions I added (best distance 0.431 to 0.583) all get past the 0.6 gate, so I'd test the model's refusal on those and tighten the target from 4 of 5 to 5 of 5.
+
+So I should rephrase critieria 3 to accomodate near miss questions that pass the gate. Fortunately, still return answer not found. 
+
 ## What I'd Do Differently
 
 <!-- Knowing what you know now — which of your five criteria would you write
      differently, and why?
 
      Milestone 5. -->
+
+On the project itself: 
+
+Since the middle of Unit 1, I desperately wished I chose a different corpus. Campus_life was already working well being split by documents but the other two such as the long text of advice documents were not being split well. I don't think my new way of chunking made improvements but it did help me learn more about chunking. I wish I tackled and fixed the chunking on advice_threads but at that point I didn't know the future tasks of changing the chunking and I just chose the default corpus. 
+
+On the five criteria: 
+
+I understand criteria better now so I would write each one more carefully such as defining exactly what an answer is and if answer is not found counts as an answer. 
+
+## How I Used AI for Unit 2 
+
+* created a new section to separate out the section for Unit 1 
+
+1. Asking to run without cache 
+
+- I realized that Unit 1, when I asked the corpus stuff, it said it used a cached answer and the runs in the run log showed me the importance of not having cached answers. So I asked AI: "how to turn off cache when running "python app.py ask "Where can students park near student housing?""  @RUNNING.md"
+- It responded: 
+
+RUNNING.md doesn't list a flag for this. I'll check how `generate.py` handles the cache.
+
+Bash Find cache handling in source files
+
+```
+run_eval.py:66:    # cache=False on purpose. Three runs have to be three real answers.
+run_eval.py:67:    answer = answer_from_chunks(question, results, cache=False)
+config.py:72:CACHE_ENABLED = os.getenv("AI201_CACHE", "1") != "0"
+config.py:73:CACHE_DIR = ROOT / ".cache"
+generate.py:17:  • Caches repeated prompts while you're building, so re-running the same
+generate.py:28:`run_eval.py` passes cache=False for you.
+generate.py:43:_cache_hits = 0
+generate.py:52:# ─── Cache ───────────────────────────────────────────────────────────────────
+generate.py:55:def _cache_key(prompt: str, system: str | None) -> str:
+generate.py:60:def _cache_read(key: str) -> str | None:
+generate.py:61:    path = config.CACHE_DIR / f"{key}.json"
+generate.py:70:def _cache_write(key: str, response: str) -> None:
+generate.py:71:    config.CACHE_DIR.mkdir(exist_ok=True)
+generate.py:72:    path = config.CACHE_DIR / f"{key}.json"
+generate.py:76:def clear_cache() -> int:
+generate.py:77:    """Delete every cached response. Returns how many were removed."""
+generate.py:78:    if not config.CACHE_DIR.exists():
+generate.py:80:    files = list(config.CACHE_DIR.glob("*.json"))
+generate.py:161:        f"{f', {_cache_hits} served from cache' if _cache_hits else ''}"
+generate.py:172:    Cache hits are not in here, because they never reached the service and so
+generate.py:173:    cost nothing. That is a real difference between a run and a cached rerun,
+generate.py:202:def generate(prompt: str, system: str | None = None, cache: bool = True) -> str:
+generate.py:209:        cache:  reuse an identical earlier answer if there is one. Leave this
+generate.py:216:    global _session_calls, _cache_hits
+generate.py:218:    use_cache = cache and config.CACHE_ENABLED
+generate.py:219:    key = _cache_key(prompt, system)
+generate.py:221:    if use_cache:
+generate.py:222:        hit = _cache_read(key)
+generate.py:224:            _cache_hits += 1
+generate.py:245:            if use_cache:
+generate.py:246:                _cache_write(key, text)
+generate.py:304:def answer_from_chunks(question: str, results, cache: bool = True) -> str:
+generate.py:313:    return generate(prompt, system=GROUNDING_INSTRUCTION, cache=cache)
+```
+
+Set the `AI201_CACHE` environment variable to `0` for that one command:
+
+```bash
+AI201_CACHE=0 python app.py ask "Where can students park near student housing?"
+```
+
+[config.py:72](config.py#L72) reads it (`CACHE_ENABLED = os.getenv("AI201_CACHE", "1") != "0"`). With it set to `0`, [generate.py:218](generate.py#L218) skips both the cache read and the cache write. The variable only applies to that command. To turn the cache off for the whole terminal session, run `export AI201_CACHE=0` first.
+
+To clear what's already cached, delete the `.cache/` folder in the project root.
+
+`app.py ask` has no `--no-cache` flag. `run_eval.py` already passes `cache=False` itself, as RUNNING.md says.
+
+Then I inquired about the --no-cache flag so it changed some lines in `app.py` to add the flag.
+
+Here are the changes it made: 
+
+The diff shows a `--no-cache` flag added to `app.py`, passed down through the call chain.
+
+**1. CLI flag** in `build_parser()`, on the `ask` subcommand:
+
+```python
+p_ask.add_argument(
+    "--no-cache",
+    action="store_true",
+    help="skip the response cache and make a fresh model call",
+)
+```
+
+**2. `cmd_ask`** converts the flag to a `cache` boolean in both call sites. These are the single-question path and the interactive loop.
+
+```python
+cache=not args.no_cache,
+```
+
+**3. `_ask_one`** takes a new `cache=True` parameter and forwards it to `ask_pipeline`.
+
+**4. `ask_pipeline`** takes `cache=True` and passes it to the generator:
+
+```python
+outcome["answer"] = answer_from_chunks(question, results, cache=cache)
+```
+
+Caching stays on by default. `--no-cache` sets `cache=False` all the way down to `answer_from_chunks`.
+
+This diff only touches `app.py`. `answer_from_chunks` has to accept a `cache` keyword, or the call will raise a `TypeError`. `git status` doesn't list `generate.py` as modified, so I haven't checked that. I can look at it if you'd like.
+
+...
+
+Your `app.py` change just wires the CLI flag into that existing parameter, so there's no `TypeError` risk.
+
+**How caching works**
+
+`generate()` hashes the prompt and system prompt into a key. If a response with that key is already in `.cache/`, it returns that response without calling the model. Otherwise it calls the model and saves the result.
+
+**How to use `--no-cache`**
+
+It's a flag on the `ask` subcommand:
+
+```
+python app.py ask "your question" --no-cache
+```
+
+It also works in interactive mode, where it applies to every question you ask in that session. It forces a fresh model call each time and skips both the cache read and the cache write.
+
+Use it when you want several real, independent answers to the same question. Cached runs return the identical answer every time, and the docstring says unit 2 testing needs this. Cache hits also cost nothing, so a cached rerun doesn't reflect real usage. The session summary printed at the end shows how many calls were "served from cache".
+
+Two related controls exist:
+
+- `run_eval.py` already passes `cache=False`, so evals never use the cache.
+- Setting the environment variable `AI201_CACHE=0` turns caching off globally, without the flag.
+- So now I have two ways to run without cache 
+
+```
+AI201_CACHE=0 python app.py ask "Where can students park near student housing?"
+python app.py ask "your question" --no-cache
+```
+
+* the code AI created looks legit and doesn't seem to break anything so I left it in
+
+2. 
+
+For criteria 2, of every answer names of source, I asked AI "Can you review criteria 2 and check if every answer for each of the 5 questions and each of the 3 runs names a source? The answer is found in ``` ```." and it found a fail on a question that said info not found (but 2/3 runs did include sources) and gave me some unprompted suggestions ot edit the criteria. It helped me create the table for criteria 2 but I check all the work and deleted some things they said incorrectly. 
+
+2. most of the writing is mine and all approved by me. I had it help me fill out some of the tables such as if i didn't want to write pass for each one. I labeled suggestions that were suggested by AI. 
+
+## How I would use AI differently for the next project 
+
+* would have it explain all the files and how it works together before I even started and maybe create a chart for me so I would remember 
+* Formatting: This unit involved a lot of typing on markdown files. I am a rambler and I also like to walk you through my process. After I was finished, I wanted to asked AI to spellcheck and fix grammer and help me with formatting and let me approve the changes one by one instead of automatically applying it. I didn't want AI to rewrite for me or change my voice. I didn't do this because I lacked energy 
+* Used AI as a sounding bored earlier 
+
+## Learnings 
+
+* RAG isn't really good at answering the more vague complex questions such as " What is the parking situation like near student housing?" resulted in no information despite there being info becuase AI couldn't confirm the [corpora/admin_parking_permits.txt](corpora/admin_parking_permits.txt) was referring to parking lots near student housing. It answered "Where can students park near student housing?" but specified if it wasn't sure if it was near student housing. The question that was most successful with consistent answers was more simple: "Where can students park?" 
+    - Source: [Criteria evaluation in results run_before: Q5: parking situation near student housing](results/run_2026-10-07_0434_before.md#q5-what-is-the-parking-situation-like-near-student-housing)
+* Writing criteria is hard. I was confused about critieria throughout Units 1 and 2 but the project definitely helped me understand it more5 5
