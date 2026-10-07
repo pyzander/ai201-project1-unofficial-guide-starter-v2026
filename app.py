@@ -183,6 +183,7 @@ def ask_pipeline(
     threshold=None,
     on_gate=None,
     on_prompt=None,
+    cache=True,
 ):
     """Retrieve, gate, answer. Returns the outcome and prints nothing.
 
@@ -231,7 +232,7 @@ def ask_pipeline(
         on_prompt(prompt)
 
     outcome["prompt"] = prompt
-    outcome["answer"] = answer_from_chunks(question, results)
+    outcome["answer"] = answer_from_chunks(question, results, cache=cache)
     outcome["sources"] = sorted({r.source for r in results})
     return outcome
 
@@ -244,6 +245,7 @@ def _ask_one(
     threshold,
     show_distances=True,
     show_prompt=False,
+    cache=True,
 ):
     import gate
     from generate import GROUNDING_INSTRUCTION
@@ -271,6 +273,7 @@ def _ask_one(
         threshold=threshold,
         on_gate=print_distances if show_distances else None,
         on_prompt=print_prompt if show_prompt else None,
+        cache=cache,
     )
 
     if outcome["refused"]:
@@ -295,6 +298,7 @@ def cmd_ask(args):
                 args.top_k,
                 args.threshold,
                 show_prompt=args.show_prompt,
+                cache=not args.no_cache,
             )
         else:
             print("Ask a question, or press Enter on an empty line to quit.\n")
@@ -313,6 +317,7 @@ def cmd_ask(args):
                     args.top_k,
                     args.threshold,
                     show_prompt=args.show_prompt,
+                    cache=not args.no_cache,
                 )
     finally:
         print(gen.usage())
@@ -370,6 +375,11 @@ def build_parser():
         "--show-prompt",
         action="store_true",
         help="print the assembled prompt before the answer",
+    )
+    p_ask.add_argument(
+        "--no-cache",
+        action="store_true",
+        help="skip the response cache and make a fresh model call",
     )
     p_ask.set_defaults(func=cmd_ask)
 
