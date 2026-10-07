@@ -104,7 +104,7 @@ The above used to say "All chunk sizes should be above 150 characters." Thus, I 
 
 ---
 
-## 5. The named source is the right source 
+## 5. The named sources are the right sources
 
 <!-- YOU WRITE THIS ONE TOO.
 
@@ -114,10 +114,10 @@ The above used to say "All chunk sizes should be above 150 characters." Thus, I 
      present — anything, as long as it names a number or an observable
      outcome. -->
 
-For at least 4 of my 5 test questions, if it generates an answer, the document the answer names is one that actually contains the answer
+For at least 4 of my 5 test questions, if it generates an answer, the all the documents the answer names is one that actually contains the answer
 
 **Why this target:**
-Improving on criteria 2. I allow one miss because my workload question is the one where three plausible files are all in front of the model at once. 
+Improving on criteria 2. I allow one miss because my workload question is the one where three plausible files are all in front of the model at once. I had 4/5 instead of 5/5 because something the answer is in one document so there lists additional irrelevant documents after. I'm very curious about this one because i feel like I may not pass on this because of of that 
 
 ---
 
