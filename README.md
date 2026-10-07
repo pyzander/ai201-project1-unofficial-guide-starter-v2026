@@ -656,7 +656,7 @@ For reference, here is the old information:
 
 1. For at least 4 of my 5 test questions, the retrieved chunks include one that contains the answer.
 2. Every answer the system produces names at least one source document.
-3. When I ask a question my documents clearly don't cover, the relevance gate stops it and the system returns "I don't have enough information about that" — in at least **5 of 5** tries.
+3. When I ask a question my documents clearly don't cover, the relevance gate stops it and the system returns "I don't have enough information about that" — in at least 4 of 5 tries.
 4. All chunk sizes should be above 50 characters.
 5. For at least 4 of my 5 test questions, if it generates an answer, the all the documents the answer names is one that actually contains the answer
 
@@ -683,7 +683,7 @@ For reference, here is the old information:
 | -------------------------------------- | ------ | ----- | ----- | ----- | ------- |
 | 1. Retrieved chunk contains the answer | 4 of 5 |       |       |       |         |
 | 2. Every answer names a source         | 5 of 5 |       |       |       |         |
-| 3. Gate stops out-of-corpus questions  | 4 of 5 |       |       |       |         |
+| 3. Gate stops out-of-corpus questions  | 5 of 5 |       |       |       |         |
 | 4.                                     |        |       |       |       |         |
 | 5.                                     |        |       |       |       |         |
 
