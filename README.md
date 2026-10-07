@@ -453,7 +453,9 @@ Honestly, I need to stop asking Claude how to run stuff because it overcomplicat
 
 ## Notes 
 
-Now we will do the testing portion of the project. We will find out how good our acceptance criteria is. Stretch feaure achieved: multiple measured improvements were made but put in the same run log. 
+Now we will do the testing portion of the project. We will find out how good our acceptance criteria is. 
+
+**Stretch feaure achieved**: multiple measured improvements were made but put in the same run log. 
 
 ## Set up 
 
