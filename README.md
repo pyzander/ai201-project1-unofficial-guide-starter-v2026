@@ -1060,19 +1060,46 @@ python app.py ask "your question" --no-cache
 
 # Capstone 
 
-# The Shape and Run Path 
+## What This Extends
 
-## Shape
+<!-- Which of your four systems, and what's new -->
+<!-- I just copied from above -->
+
+Units 1 and 2 builds and tests a RAG pipeline using the `campus_life` corpus. The capstone adds the operational layer: running it locally with logs that record a real run.
+
+Files changed for the capstone. Note: the wording is directly from the instructions:
+
+* `criteria.md`: Five numbered criteria, each with a target and a reason, plus any revisions written underneath the originals. 
+     * All five criteria describe an action a reader could perform and an outcome they could check, without asking the student what they meant.
+     * All five criteria carry a reason, and at least three reference something specific about this system, its extension, or the cost of being wrong.
+     * At least three criteria test the extension, the run path, or the instrumentation — the work done this unit.
+* `RUNNING.md`: 
+     * The run path — a URL and how it got there, or the start command and the environment it needs
+          * Includes start command plus the Python version, the dependencies, and any model files with their sizes
+* `README.md`: Nine sections added under Capstone
+* At least eight new commits from this unit, with `criteria.md` committed before any results, and both of those commits named in their messages
+
+## The Shape
+
+<!-- A, B or C, and what you decided is out of scope -->
 
 The three shapes are: A: Deploy and instrument, B: Harden against failure and C: Extend one capability. B and C deploy and instrument as well, they just include doing more as well. 
 
-I am choosing **shape A**: 
+I am choosing **shape A**. According to the instructions: 
 
 > A — Deploy and instrument. Take a system that only ever ran on your laptop and put it somewhere it runs on its own, with logging and measurement around it. The extension is the operational layer: the run path, the instrumentation, and the numbers that come out of it.
 >
 > Whichever you pick, all three still deploy and instrument — shape A just makes that the whole job, while B and C carry it alongside. The run path and the log are required in every case.
 
-## Run path: 
+### Out of Scope
+
+* Fixing the chunking: I've mentioned that I didn't like the way I did the chunking previously but since are not re-writing our past mistakes here, I am not fixing that. Ideally, I would've loved to choose a different corpus that didn't do so well initially and fixed the chunky for that. Bringing in my own documents would've been super cool as well. Note: my chunking method does work better than the original on broad questions that cover multiple documents such as "Which halls are quiet?" and "Which halls are loud?" 
+* A User Interface: Nice to have but too much work. 
+* Path A — hosting. 
+
+## Running It
+
+<!-- Which path, and a pointer to RUNNING.md -->
 
 Of the two run paths, I chose **Path B: local with logs**, rather than Path A, which is hosted at a URL as well as everything Path B asks for.
 
@@ -1088,8 +1115,31 @@ Here is what the instructions state about it:
 >
 > Path B asks you to make the run reproducible for someone who isn't you, which is most of what deployment actually is. What both paths must prove is the same thing: this ran somewhere, more than once, and there's a record of it.
 
-# Out of Scope 
+## Instrumentation
 
-* Fixing the chunking: I've mentioned that I didn't like the way I did the chunking previously but since are not re-writing our past mistakes here, I am not fixing that. Ideally, I would've loved to choose a different corpus that didn't do so well initially and fixed the chunky for that. Bringing in my own documents would've been super cool as well. 
-* A User Interface: Nice to have but too much work. 
-* Path A — hosting. 
+<!-- What each log record holds, and at least ten entries pasted as text -->
+
+
+
+## What It Costs
+
+<!-- Your measured per-run cost, how you measured it, and the hundred-a-day arithmetic 
+What It Costs gives a measured per-run number and how it was measured, plus the hundred-a-day arithmetic.
+-->
+
+## Run Log and Verdicts
+
+<!-- Five criteria across three trials, MET or MISSED, and for each miss the stage and the mechanism -->
+
+## The Improvement
+
+<!-- What you changed, why, and the second run log in the same format -->
+
+## What's Still Broken
+
+<!-- What you'd do about each remaining miss, why you stopped, and the one thing you'd do first. If you met all five: which target you'd tighten, and to what -->
+
+## How I Used AI
+
+<!-- Two specific moments — what you asked, what you got, what you changed -->
+
