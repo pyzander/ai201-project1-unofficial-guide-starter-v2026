@@ -102,14 +102,14 @@ Useful flags:
 
 ## Which command goes with which milestone
 
-| Milestone | What you're doing | Command |
-|---|---|---|
-| 1 | Pick a corpus and see it work | `app.py corpora`, `app.py index`, `app.py ask "..."` |
-| 2 | Write your acceptance criteria | Edit `criteria.md` and `questions.py` |
-| 3 | Swap in your own chunker | Edit `chunker.py`, then `app.py index` and `app.py chunks` |
-| 4 | Tune retrieval, set your cutoff | `app.py retrieve "..."`, then edit `THRESHOLD` in `config.py` |
-| 5 | Write it up | Fill in `README.md` |
-| Unit 2 | Run the test, fix one thing, re-run | `run_eval.py --label before` … `run_eval.py --label after` |
+| Milestone | What you're doing                   | Command                                                       |
+| --------- | ----------------------------------- | ------------------------------------------------------------- |
+| 1         | Pick a corpus and see it work       | `app.py corpora`, `app.py index`, `app.py ask "..."`          |
+| 2         | Write your acceptance criteria      | Edit `criteria.md` and `questions.py`                         |
+| 3         | Swap in your own chunker            | Edit `chunker.py`, then `app.py index` and `app.py chunks`    |
+| 4         | Tune retrieval, set your cutoff     | `app.py retrieve "..."`, then edit `THRESHOLD` in `config.py` |
+| 5         | Write it up                         | Fill in `README.md`                                           |
+| Unit 2    | Run the test, fix one thing, re-run | `run_eval.py --label before` … `run_eval.py --label after`    |
 
 `app.py chunks` prints each chunk with its **source file and the function that
 produced it** — both of which your README has to name. Copy them straight
