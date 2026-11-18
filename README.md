@@ -1103,6 +1103,10 @@ I am choosing **shape A**. According to the instructions:
 
 Of the two run paths, I chose **Path B: local with logs**, rather than Path A, which is hosted at a URL as well as everything Path B asks for.
 
+> [!IMPORTANT]  
+>
+> For Instructions, go here: [RUNNING.md -> Capstone Running Notes -> TLDR](RUNNING.md#tldr)
+
 Here is what the instructions state about it: 
 
 > Path B — local with logs. Your system runs on your machine, started by a single documented command, with a committed record of it actually running. You include:
@@ -1121,13 +1125,586 @@ Here is what the instructions state about it:
 
 > [!TIP]
 > Go to the [logs/](logs/) folder to view the logs. Each time the server starts, it writes a new file named for its start time in local time, such as `logs/requests_2026-11-18_105410.jsonl` (`requests_YYYY-MM-DD_HHMMSS.jsonl`). Each line in the file represents one request.
+> Set `AI201_LOG_FILE` to use a fixed file name instead, or set `AI201_LOG=0` to turn logging off.
 
+
+
+Error message that sometimes (very rarely) occurs when sending too many requests.:
+
+```json
+  {
+    "timestamp": "2026-11-18T18:16:08.353+00:00",
+    "request_id": "4196c8d115ff",
+    "in": {
+      "method": "POST",
+      "path": "/ask",
+      "question": "Which halls are loud?"
+    },
+    "out": {
+      "status": 500,
+      "error": "ServerError: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}"
+    },
+    "latency_ms": 330.7,
+    "error_type": "ServerError"
+  }
+  
+```
+
+### Log entries 
+10 in scope and 5 out of scope. Source: [logs/requests_2026-11-18_145508.pretty.json](logs/requests_2026-11-18_145508.pretty.json)
+
+```json
+[
+  {
+    "timestamp": "2026-11-18T20:55:47.053+00:00",
+    "request_id": "f61214b71dc0",
+    "in": {
+      "method": "GET",
+      "path": "/health"
+    },
+    "out": {
+      "status": 200,
+      "index_ready": true
+    },
+    "latency_ms": 612.3
+  },
+  {
+    "timestamp": "2026-11-18T20:55:50.493+00:00",
+    "request_id": "eb59cb2149d0",
+    "in": {
+      "method": "POST",
+      "path": "/ask",
+      "question": "Is the housing lottery random?"
+    },
+    "out": {
+      "status": 200,
+      "answer": "The housing lottery is not entirely random in the way most people assume. Rising sophomores get a number drawn at random, but juniors and seniors are ordered by accumulated credit hours first, with random tie-breaks used only for ties. \n\nSource: admin_housing_lottery.txt",
+      "refused": false,
+      "sources": [
+        "admin_housing_lottery.txt",
+        "admin_parking_permits.txt",
+        "advising_registration.txt",
+        "housing_aldridge_hall.txt",
+        "housing_innisfree_hall.txt",
+        "housing_morrow_house.txt"
+      ]
+    },
+    "latency_ms": 3429.9,
+    "corpus": "campus_life",
+    "best_distance": 0.2541,
+    "threshold": 0.6,
+    "retrieval_ms": 877.3,
+    "generation_ms": 2552.3,
+    "model_calls": 1,
+    "cache_hit": false,
+    "tokens": {
+      "prompt": 629,
+      "output": 58
+    }
+  },
+  {
+    "timestamp": "2026-11-18T20:55:51.357+00:00",
+    "request_id": "ef7c2391812e",
+    "in": {
+      "method": "POST",
+      "path": "/ask",
+      "question": "Which halls are quiet?"
+    },
+    "out": {
+      "status": 200,
+      "answer": "Based on the provided documents, Tamsin Court is described as \"Quiet, structurally — concrete floors between units\" (housing_tamsin_court_noise.txt), and Aldridge Hall has \"Quiet floors on 3 and 4\" that are genuinely enforced (housing_aldridge_hall_noise.txt). Additionally, Innisfree Hall is described as having moderate noise levels, with the short wing being much quieter (housing_innisfree_hall_noise.txt).",
+      "refused": false,
+      "sources": [
+        "housing_aldridge_hall_noise.txt",
+        "housing_calder_annexe_noise.txt",
+        "housing_fenwick_court_noise.txt",
+        "housing_innisfree_hall.txt",
+        "housing_innisfree_hall_noise.txt",
+        "housing_morrow_house_noise.txt",
+        "housing_old_brewhouse_noise.txt",
+        "housing_tamsin_court_noise.txt"
+      ]
+    },
+    "latency_ms": 841.8,
+    "corpus": "campus_life",
+    "best_distance": 0.3703,
+    "threshold": 0.6,
+    "retrieval_ms": 61.9,
+    "generation_ms": 779.6,
+    "model_calls": 1,
+    "cache_hit": false,
+    "tokens": {
+      "prompt": 745,
+      "output": 101
+    }
+  },
+  {
+    "timestamp": "2026-11-18T20:55:52.483+00:00",
+    "request_id": "a4e11a8f5ae9",
+    "in": {
+      "method": "POST",
+      "path": "/ask",
+      "question": "Which halls are loud?"
+    },
+    "out": {
+      "status": 200,
+      "answer": "Based on the provided documents:\n\n* **Morrow House** is described as loud until about 1:00 AM on weekends with no enforced quiet hours (*housing_morrow_house_noise.txt*). \n* **Old Brewhouse** has strange sound carrying due to original brick, where a room two floors up can be louder than next door (*housing_old_brewhouse_noise.txt*).",
+      "refused": false,
+      "sources": [
+        "housing_aldridge_hall_noise.txt",
+        "housing_calder_annexe_noise.txt",
+        "housing_fenwick_court_noise.txt",
+        "housing_innisfree_hall.txt",
+        "housing_innisfree_hall_noise.txt",
+        "housing_morrow_house_noise.txt",
+        "housing_old_brewhouse_noise.txt",
+        "housing_tamsin_court_noise.txt"
+      ]
+    },
+    "latency_ms": 1100.7,
+    "corpus": "campus_life",
+    "best_distance": 0.4221,
+    "threshold": 0.6,
+    "retrieval_ms": 55.6,
+    "generation_ms": 1044.8,
+    "model_calls": 1,
+    "cache_hit": false,
+    "tokens": {
+      "prompt": 745,
+      "output": 88
+    }
+  },
+  {
+    "timestamp": "2026-11-18T20:55:55.455+00:00",
+    "request_id": "1fc23bdff766",
+    "in": {
+      "method": "POST",
+      "path": "/ask",
+      "question": "What do students say about wait times at Commons during lunch?"
+    },
+    "out": {
+      "status": 200,
+      "answer": "Students state that the wait time at Kestrel Commons is 20 to 25 minutes between 12:15 and 1:00, and under 5 minutes before 11:45. \n\nSource: `dining_kestrel_commons.txt` (and supported by `dining_kestrel_commons_followup.txt`).",
+      "refused": false,
+      "sources": [
+        "dining_halden_hall_followup.txt",
+        "dining_kestrel_commons.txt",
+        "dining_kestrel_commons_followup.txt",
+        "dining_north_kitchen_followup.txt",
+        "dining_pellew_dining_hall_followup.txt",
+        "dining_the_atrium_followup.txt",
+        "dining_the_ridgeway_cafe_followup.txt",
+        "dining_verrill_street_grill_followup.txt"
+      ]
+    },
+    "latency_ms": 2945.6,
+    "corpus": "campus_life",
+    "best_distance": 0.308,
+    "threshold": 0.6,
+    "retrieval_ms": 57.7,
+    "generation_ms": 2887.7,
+    "model_calls": 1,
+    "cache_hit": false,
+    "tokens": {
+      "prompt": 905,
+      "output": 77
+    }
+  },
+  {
+    "timestamp": "2026-11-18T20:55:56.533+00:00",
+    "request_id": "f5c86bfc7eeb",
+    "in": {
+      "method": "POST",
+      "path": "/ask",
+      "question": "What time is dinner served in dining halls?"
+    },
+    "out": {
+      "status": 200,
+      "answer": "Based on the provided documents:\n* Pellew Dining Hall is open daily from 7:00am to 8:00pm (dining_pellew_dining_hall.txt).\n* Halden Hall closes at 7:00pm on weekdays and is closed Sundays (dining_halden_hall.txt and dining_halden_hall_followup.txt). \n\nThe documents do not specify exact dinner service hours beyond these closing times.",
+      "refused": false,
+      "sources": [
+        "dining_halden_hall.txt",
+        "dining_halden_hall_followup.txt",
+        "dining_kestrel_commons_followup.txt",
+        "dining_north_kitchen_followup.txt",
+        "dining_pellew_dining_hall.txt",
+        "dining_pellew_dining_hall_followup.txt",
+        "dining_the_atrium.txt"
+      ]
+    },
+    "latency_ms": 1049.8,
+    "corpus": "campus_life",
+    "best_distance": 0.3852,
+    "threshold": 0.6,
+    "retrieval_ms": 66.9,
+    "generation_ms": 982.5,
+    "model_calls": 1,
+    "cache_hit": false,
+    "tokens": {
+      "prompt": 831,
+      "output": 99
+    }
+  },
+  {
+    "timestamp": "2026-11-18T20:55:58.145+00:00",
+    "request_id": "0ef848cae66b",
+    "in": {
+      "method": "POST",
+      "path": "/ask",
+      "question": "What do students say about CS 210?"
+    },
+    "out": {
+      "status": 200,
+      "answer": "Based on the documents, students say that you should do the labs even though they are only worth 10%, because the exams reuse the lab problems (`course_cs_210.txt` and `course_cs_210_exams.txt`). They also note that you should expect 8 to 10 hours a week outside of class, which is real time and front-loaded so that the first month is heavier than the rest (`course_cs_210.txt` and `course_cs_210_workload.txt`).",
+      "refused": false,
+      "sources": [
+        "course_cs_210.txt",
+        "course_cs_210_exams.txt",
+        "course_cs_210_workload.txt",
+        "course_cs_340.txt",
+        "course_cs_340_exams.txt",
+        "course_engl_205.txt"
+      ]
+    },
+    "latency_ms": 1578.8,
+    "corpus": "campus_life",
+    "best_distance": 0.3906,
+    "threshold": 0.6,
+    "retrieval_ms": 67.8,
+    "generation_ms": 1510.8,
+    "model_calls": 1,
+    "cache_hit": false,
+    "tokens": {
+      "prompt": 654,
+      "output": 119
+    }
+  },
+  {
+    "timestamp": "2026-11-18T20:55:58.990+00:00",
+    "request_id": "06a334fb5ec2",
+    "in": {
+      "method": "POST",
+      "path": "/ask",
+      "question": "What is the deadline to add or drop a class?"
+    },
+    "out": {
+      "status": 200,
+      "answer": "You can add a course through the end of the second week, and you can drop a course through the end of week six (though drops after week two result in a \"W\" on your transcript). \n\nSource: admin_add_drop_deadline.txt",
+      "refused": false,
+      "sources": [
+        "admin_add_drop_deadline.txt",
+        "admin_declaring_a_major.txt",
+        "admin_grade_appeals.txt",
+        "admin_pass_fail_option.txt",
+        "advising_registration.txt",
+        "course_cs_210_workload.txt",
+        "course_econ_101_workload.txt",
+        "course_stat_150_workload.txt"
+      ]
+    },
+    "latency_ms": 818.3,
+    "corpus": "campus_life",
+    "best_distance": 0.3107,
+    "threshold": 0.6,
+    "retrieval_ms": 60.7,
+    "generation_ms": 757.3,
+    "model_calls": 1,
+    "cache_hit": false,
+    "tokens": {
+      "prompt": 725,
+      "output": 54
+    }
+  },
+  {
+    "timestamp": "2026-11-18T20:56:00.776+00:00",
+    "request_id": "b17e863079d2",
+    "in": {
+      "method": "POST",
+      "path": "/ask",
+      "question": "What do students say about the library?"
+    },
+    "out": {
+      "status": 200,
+      "answer": "Based on the provided documents, students say the following about the library:\n\n* The library holds one copy of most required texts on two-hour reserve, which is enough for reading-light courses (*money_textbooks.txt*).\n* Most people in Aldridge Hall, Innisfree Hall, Morrow House, Calder Annexe, and Tamsin Court go to the library to work when they need quiet (*housing_aldridge_hall_noise.txt*, *housing_innisfree_hall_noise.txt*, *housing_morrow_house_noise.txt*, *housing_calder_annexe_noise.txt*, *housing_tamsin_court_noise.txt*). \n* The library is open until 2am during term and until 10pm during reading week (*study_library_hours.txt*).\n* The third floor is silent and enforced, the second floor is quiet in theory, and the basement has the only outlets at every seat (making it full from about 10am) (*study_library_hours.txt*).",
+      "refused": false,
+      "sources": [
+        "admin_library_holds.txt",
+        "housing_aldridge_hall_noise.txt",
+        "housing_calder_annexe_noise.txt",
+        "housing_innisfree_hall_noise.txt",
+        "housing_morrow_house_noise.txt",
+        "housing_tamsin_court_noise.txt",
+        "money_textbooks.txt",
+        "study_library_hours.txt"
+      ]
+    },
+    "latency_ms": 1760.2,
+    "corpus": "campus_life",
+    "best_distance": 0.4956,
+    "threshold": 0.6,
+    "retrieval_ms": 57.6,
+    "generation_ms": 1702.4,
+    "model_calls": 1,
+    "cache_hit": false,
+    "tokens": {
+      "prompt": 741,
+      "output": 228
+    }
+  },
+  {
+    "timestamp": "2026-11-18T20:56:01.581+00:00",
+    "request_id": "d786e41c35b6",
+    "in": {
+      "method": "POST",
+      "path": "/ask",
+      "question": "How do I book a study group room?"
+    },
+    "out": {
+      "status": 200,
+      "answer": "You can book a group study room two weeks in advance through the library site. They are booked in two-hour blocks, with a maximum of two blocks per person per week. \n\nSource: study_group_rooms.txt",
+      "refused": false,
+      "sources": [
+        "course_cs_210.txt",
+        "course_cs_340.txt",
+        "course_econ_101.txt",
+        "course_engl_205.txt",
+        "money_textbooks.txt",
+        "orientation_what_matters.txt",
+        "study_group_rooms.txt"
+      ]
+    },
+    "latency_ms": 772.8,
+    "corpus": "campus_life",
+    "best_distance": 0.2804,
+    "threshold": 0.6,
+    "retrieval_ms": 76.6,
+    "generation_ms": 695.9,
+    "model_calls": 1,
+    "cache_hit": false,
+    "tokens": {
+      "prompt": 680,
+      "output": 47
+    }
+  },
+  {
+    "timestamp": "2026-11-18T20:56:03.135+00:00",
+    "request_id": "8f7b65542a52",
+    "in": {
+      "method": "POST",
+      "path": "/ask",
+      "question": "Where can students park?"
+    },
+    "out": {
+      "status": 200,
+      "answer": "Students can park in the west lots (if they purchase a permit in August before they sell out) or the east lot (which never sells out). People who miss the permit window can also park on Verrill Street and walk in. \n\nSource: `admin_parking_permits.txt`",
+      "refused": false,
+      "sources": [
+        "admin_parking_permits.txt",
+        "dining_north_kitchen_followup.txt",
+        "dining_verrill_street_grill.txt",
+        "housing_fenwick_court.txt",
+        "housing_old_brewhouse.txt",
+        "transit_shuttle.txt",
+        "transit_walking.txt"
+      ]
+    },
+    "latency_ms": 1524.6,
+    "corpus": "campus_life",
+    "best_distance": 0.5253,
+    "threshold": 0.6,
+    "retrieval_ms": 66.8,
+    "generation_ms": 1457.7,
+    "model_calls": 1,
+    "cache_hit": false,
+    "tokens": {
+      "prompt": 633,
+      "output": 62
+    }
+  },
+  {
+    "timestamp": "2026-11-18T20:56:03.235+00:00",
+    "request_id": "6935cd605964",
+    "in": {
+      "method": "POST",
+      "path": "/ask",
+      "question": "What is the capital of Mongolia?"
+    },
+    "out": {
+      "status": 200,
+      "answer": "I don't have enough information about that.",
+      "refused": true,
+      "sources": []
+    },
+    "latency_ms": 74.9,
+    "corpus": "campus_life",
+    "best_distance": 0.8246,
+    "threshold": 0.6,
+    "retrieval_ms": 74.8,
+    "generation_ms": 0.0,
+    "model_calls": 0,
+    "cache_hit": false,
+    "tokens": {
+      "prompt": 0,
+      "output": 0
+    }
+  },
+  {
+    "timestamp": "2026-11-18T20:56:03.319+00:00",
+    "request_id": "db29fcf17e91",
+    "in": {
+      "method": "POST",
+      "path": "/ask",
+      "question": "How do I change the oil in a diesel engine?"
+    },
+    "out": {
+      "status": 200,
+      "answer": "I don't have enough information about that.",
+      "refused": true,
+      "sources": []
+    },
+    "latency_ms": 68.8,
+    "corpus": "campus_life",
+    "best_distance": 0.9231,
+    "threshold": 0.6,
+    "retrieval_ms": 68.7,
+    "generation_ms": 0.0,
+    "model_calls": 0,
+    "cache_hit": false,
+    "tokens": {
+      "prompt": 0,
+      "output": 0
+    }
+  },
+  {
+    "timestamp": "2026-11-18T20:56:03.401+00:00",
+    "request_id": "fa89c0a9b81c",
+    "in": {
+      "method": "POST",
+      "path": "/ask",
+      "question": "Who won the 1994 World Cup?"
+    },
+    "out": {
+      "status": 200,
+      "answer": "I don't have enough information about that.",
+      "refused": true,
+      "sources": []
+    },
+    "latency_ms": 67.0,
+    "corpus": "campus_life",
+    "best_distance": 0.8859,
+    "threshold": 0.6,
+    "retrieval_ms": 66.8,
+    "generation_ms": 0.0,
+    "model_calls": 0,
+    "cache_hit": false,
+    "tokens": {
+      "prompt": 0,
+      "output": 0
+    }
+  },
+  {
+    "timestamp": "2026-11-18T20:56:03.482+00:00",
+    "request_id": "c71ce210da5b",
+    "in": {
+      "method": "POST",
+      "path": "/ask",
+      "question": "What is the recommended dosage of ibuprofen for a headache?"
+    },
+    "out": {
+      "status": 200,
+      "answer": "I don't have enough information about that.",
+      "refused": true,
+      "sources": []
+    },
+    "latency_ms": 65.0,
+    "corpus": "campus_life",
+    "best_distance": 0.8487,
+    "threshold": 0.6,
+    "retrieval_ms": 64.8,
+    "generation_ms": 0.0,
+    "model_calls": 0,
+    "cache_hit": false,
+    "tokens": {
+      "prompt": 0,
+      "output": 0
+    }
+  },
+  {
+    "timestamp": "2026-11-18T20:56:03.560+00:00",
+    "request_id": "392ac580fa6a",
+    "in": {
+      "method": "POST",
+      "path": "/ask",
+      "question": "How do I write a for loop in Rust?"
+    },
+    "out": {
+      "status": 200,
+      "answer": "I don't have enough information about that.",
+      "refused": true,
+      "sources": []
+    },
+    "latency_ms": 64.3,
+    "corpus": "campus_life",
+    "best_distance": 0.8635,
+    "threshold": 0.6,
+    "retrieval_ms": 64.3,
+    "generation_ms": 0.0,
+    "model_calls": 0,
+    "cache_hit": false,
+    "tokens": {
+      "prompt": 0,
+      "output": 0
+    }
+  }
+]
+
+
+```
 
 ## What It Costs
 
 <!-- Your measured per-run cost, how you measured it, and the hundred-a-day arithmetic 
 What It Costs gives a measured per-run number and how it was measured, plus the hundred-a-day arithmetic.
 -->
+
+**One run, measured:** an answered question uses an average of **822 tokens** (729 in, 93 out) and takes **1.58 seconds**. On the paid tier that is about **$0.00045** per run. The free tier costs $0.
+
+**How I measured it.** I ran the server with `AI201_CACHE=0`, so every answer was a real model call, and sent ten different in-scope questions one at a time. For each request, `serve.py` read the session token counters in `generate.py` before and after the call. The difference is that request's tokens, as reported by the Gemini API (`usage_metadata`). It also timed each request from arrival to a finished answer. Each request is logged to [logs/requests_2026-11-18_145508.pretty.json](logs/requests_2026-11-18_145508.pretty.json). The prices below come from the [Gemini API pricing page](https://aistudio.google.com/docs/pricing#gemini-3.5-flash-lite), but they only convert the tokens I measured into dollars. The token counts and times are measured.
+
+| #  | Question                                                       | Tokens in | Tokens out | Time       |
+| -- | -------------------------------------------------------------- | --------- | ---------- | ---------- |
+| 1  | Is the housing lottery random?                                 | 629       | 58         | 3.43 s     |
+| 2  | Which halls are quiet?                                         | 745       | 101        | 0.84 s     |
+| 3  | Which halls are loud?                                          | 745       | 88         | 1.10 s     |
+| 4  | What do students say about wait times at Commons during lunch? | 905       | 77         | 2.95 s     |
+| 5  | What time is dinner served in dining halls?                    | 831       | 99         | 1.05 s     |
+| 6  | What do students say about CS 210?                             | 654       | 119        | 1.58 s     |
+| 7  | What is the deadline to add or drop a class?                   | 725       | 54         | 0.82 s     |
+| 8  | What do students say about the library?                        | 741       | 228        | 1.76 s     |
+| 9  | How do I book a study group room?                              | 680       | 47         | 0.77 s     |
+| 10 | Where can students park?                                       | 633       | 62         | 1.52 s     |
+|    | **Average**                                                    | **728.8** | **93.3**   | **1.58 s** |
+
+**Dollars.** Free tier: $0 for input and output. Paid tier: $0.30 per 1M input tokens and $2.50 per 1M output tokens (output includes thinking tokens), from the [pricing page](https://aistudio.google.com/docs/pricing#gemini-3.5-flash-lite).
+
+* Input: 728.8 × $0.30 ÷ 1,000,000 = $0.000219
+* Output: 93.3 × $2.50 ÷ 1,000,000 = $0.000233
+* **Per run: $0.000452** (output tokens are 11% of the tokens but 52% of the cost)
+
+**A hundred a day.**
+
+* 100 runs × 822 tokens = about 82,000 tokens a day (72,900 in, 9,300 out)
+* 100 × $0.000452 = **$0.045 a day**, about $1.36 for 30 days and $16.49 for a year, on the paid tier
+* On the free tier, the daily cost is $0, but 100 runs a day would use quota. The service also pushes back when it is busy. During testing I got 503 "high demand" errors that were not counted here.
+* These costs are for Standard prices (live requests). For batch jobs (queued jobs), the price drops by half. 
+* You would have to ask approximately 2,213 answered questions to spend $1. 
+
+**What this doesn't cover.**
+
+* The ten runs are ten different questions, not one question repeated ten times. A single run varied from $0.00032 to $0.00079, mostly because of the length of the answer.
+* Refused questions cost nothing. The gate rejects them before the model is called, so they used 0 tokens and about 0.07 s.
+* The token counter reads the prompt and output counts only. If the model used thinking tokens, they would be billed as output but are not in my numbers, so the real cost could be higher.
+* Time is measured on the server and leaves out the network, which is negligible on localhost. The first request is slower because it loads the retrieval model.
 
 ## Run Log and Verdicts
 
@@ -1140,6 +1717,8 @@ What It Costs gives a measured per-run number and how it was measured, plus the 
 ## What's Still Broken
 
 <!-- What you'd do about each remaining miss, why you stopped, and the one thing you'd do first. If you met all five: which target you'd tighten, and to what -->
+
+Rate Limiting so I won't get 503 errors that say: `{"error":"ServerError: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}"}` Retrying during the brief seconds of the service being down. 
 
 ## How I Used AI
 
