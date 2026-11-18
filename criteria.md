@@ -163,3 +163,41 @@ Later we will discover: Is the problem with the measurement, or with the result?
      The whole reason the originals stay visible is so someone can see what you
      said before you knew the answer.
      ───────────────────────────────────────────────────────────────────────── -->
+
+# Capstone Criteria 
+
+# 1. Bad input gets a 400, not a 500.
+
+I never actually tested this so I am curious what would happen. Bad requests include no body, {} empty question, invalid JSON and gibberish. I feel that the first run will fail and I will have to fix it. 
+
+I am hoping it gets handled by the starter code reformatted below.
+
+```py
+    if not question:
+        message = (
+            "Send JSON with a question in it, like "
+            '{"question": "is the housing lottery random?"}'
+        )
+        g.log_out["error"] = message
+        return jsonify({"error": message}), 400
+```
+
+# 2. Run stays under 800 tokens (9/10 times) 
+
+My tokens toal of input and ouput averaged 822 so I think this one is a miss and I think I would need to do different ways to reduce the amount of tokens. 
+
+# 3. Live endpoint answers have a latency of under 2 seconds (9/10 times) 
+
+The latency in the /ask route is calculated by retrieval_ms + generation_ms. It is calculated before the reply is built. In the log, the latency_ms covers building the reply as well, so it is a fraction of a millisecond larger. It is a difference of about 0.3 seconds. I will just use this latency time in the json log. The ask route is not able to create the final number. The latency time in json is more complete but also doesn't cover latency if I deploy (which is neglegible on localhost but matters in deployment) and and time to send out request and sending the response back to client because this goes across different networks. Latency is timed on the client side by Flask. 
+
+I chose 2 seconds because it is near the suggested average. 
+
+# 4. Run path works from a fresh clone 100% of the time. 
+
+Get /health and asking a sample in scope question returns true 100% of the time. I would need a different reviewer to test this out. 
+
+# 5. Timeout returns a message, not a crash
+
+I thought the one from milestone 5 was pretty good and I thought my code was already doing that so I wanted to check if it was. 
+
+This is measured by an error message in the json files. 
