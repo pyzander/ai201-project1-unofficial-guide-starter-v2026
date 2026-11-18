@@ -1053,7 +1053,7 @@ python app.py ask "your question" --no-cache
 
 ## Learnings 
 
-* RAG isn't really good at answering the more vague complex questions such as " What is the parking situation like near student housing?" resulted in no information despite there being info becuase AI couldn't confirm the [corpora/admin_parking_permits.txt](corpora/admin_parking_permits.txt) was referring to parking lots near student housing. It answered "Where can students park near student housing?" but specified if it wasn't sure if it was near student housing. The question that was most successful with consistent answers was more simple: "Where can students park?" 
+* RAG isn't really good at answering the more vague complex questions such as " What is the parking situation like near student housing?" resulted in no information despite there being info becuase AI couldn't confirm the [corpora/campus_life/documents/admin_parking_permits.txt](corpora/campus_life/documents/admin_parking_permits.txt) was referring to parking lots near student housing. It answered "Where can students park near student housing?" but specified if it wasn't sure if it was near student housing. The question that was most successful with consistent answers was more simple: "Where can students park?" 
     - Source: [Criteria evaluation in results run_before: Q5: parking situation near student housing](results/run_2026-10-07_0434_before.md#q5-what-is-the-parking-situation-like-near-student-housing)
 * Writing criteria is hard. I was confused about critieria throughout Units 1 and 2 but the project definitely helped me understand it more.
 * tables in markdown are a pain. I use an extension to help with markdown but it doesn't let me edit tables because I'm not paying for it so editing the tables is a pain and since I wrote so much, it's so easy to get lost. 
@@ -1070,12 +1070,12 @@ Units 1 and 2 builds and tests a RAG pipeline using the `campus_life` corpus. Th
 Files changed for the capstone. Note: the wording is directly from the instructions:
 
 * `criteria.md`: Five numbered criteria, each with a target and a reason, plus any revisions written underneath the originals. 
-     * All five criteria describe an action a reader could perform and an outcome they could check, without asking the student what they meant.
-     * All five criteria carry a reason, and at least three reference something specific about this system, its extension, or the cost of being wrong.
-     * At least three criteria test the extension, the run path, or the instrumentation — the work done this unit.
+    - All five criteria describe an action a reader could perform and an outcome they could check, without asking the student what they meant.
+    - All five criteria carry a reason, and at least three reference something specific about this system, its extension, or the cost of being wrong.
+    - At least three criteria test the extension, the run path, or the instrumentation — the work done this unit.
 * `RUNNING.md`: 
-     * The run path — a URL and how it got there, or the start command and the environment it needs
-          * Includes start command plus the Python version, the dependencies, and any model files with their sizes
+    - The run path — a URL and how it got there, or the start command and the environment it needs
+        - Includes start command plus the Python version, the dependencies, and any model files with their sizes
 * `README.md`: Nine sections added under Capstone
 * At least eight new commits from this unit, with `criteria.md` committed before any results, and both of those commits named in their messages
 
@@ -1710,17 +1710,120 @@ What It Costs gives a measured per-run number and how it was measured, plus the 
 
 <!-- Five criteria across three trials, MET or MISSED, and for each miss the stage and the mechanism -->
 
+The code fails on critieria one when a question with a number is inputted. 
+
+# 1. no body
+curl -s -X POST http://localhost:5001/ask -w "\nHTTP %{http_code}\n"
+
+# 2. empty JSON object
+curl -s -X POST http://localhost:5001/ask -H 'Content-Type: application/json' -d '{}' -w "\nHTTP %{http_code}\n"
+
+# 3. empty question
+curl -s -X POST http://localhost:5001/ask -H 'Content-Type: application/json' -d '{"question": ""}' -w "\nHTTP %{http_code}\n"
+
+# 4. invalid JSON
+curl -s -X POST http://localhost:5001/ask -H 'Content-Type: application/json' -d 'not json' -w "\nHTTP %{http_code}\n"
+
+# 5. question is a number
+curl -s -X POST http://localhost:5001/ask -H 'Content-Type: application/json' -d '{"question": 123}' -w "\nHTTP %{http_code}\n"
+
+Start the server first (terminal 1, `PORT=5001 AI201_CACHE=0 python serve.py`). Then paste these into terminal 2. Each command prints the reply, then a line with the HTTP status code. `-w` adds the status line, and `-s` hides curl's progress meter.
+
+```bash
+# 1. no body
+curl -s -X POST http://localhost:5001/ask -w "\nHTTP %{http_code}\n"
+
+# 2. empty JSON object
+curl -s -X POST http://localhost:5001/ask -H 'Content-Type: application/json' -d '{}' -w "\nHTTP %{http_code}\n"
+
+# 3. empty question
+curl -s -X POST http://localhost:5001/ask -H 'Content-Type: application/json' -d '{"question": ""}' -w "\nHTTP %{http_code}\n"
+
+# 4. invalid JSON
+curl -s -X POST http://localhost:5001/ask -H 'Content-Type: application/json' -d 'not json' -w "\nHTTP %{http_code}\n"
+
+# 5. question is a number
+curl -s -X POST http://localhost:5001/ask -H 'Content-Type: application/json' -d '{"question": 123}' -w "\nHTTP %{http_code}\n"
+```
+
+The `#` lines are comments. In zsh they may print `command not found: #` when pasted, which is harmless, or you can skip them.
+
+
+| # | Input | Expected | Today |
+|---|---|---|---|
+| 1 | no body | 400 | 400 with a JSON error message |
+| 2 | `{}` | 400 | 400 |
+| 3 | empty question | 400 | 400 |
+| 4 | invalid JSON | 400 | 400 |
+| 5 | `{"question": 123}` | 400 | **500**, an HTML error page |
+
+Four of the five pass. Number 5 fails, so it would be a miss. In my test the server's terminal also printed a Python traceback for that one, `AttributeError: 'int' object has no attribute 'strip'`.
+
+Previous output: 
+
+```
+(.venv) ➜  ai201-project1-unofficial-guide-starter-v2026 git:(main) ✗ curl -s -X POST http://localhost:5001/ask -H 'Content-Type: application/json' -d '{"question": asdfioje3}' -w "\nHTTP %{http_code}\n"
+{"error":"Send JSON with a question in it, like {\"question\": \"is the housing lottery random?\"}"}
+
+HTTP 400
+(.venv) ➜  ai201-project1-unofficial-guide-starter-v2026 git:(main) ✗ curl -s -X POST http://localhost:5001/ask -H 'Content-Type: application/json' -d '{"questin": 33}' -w "\nHTTP %{http_code}\n" 
+{"error":"Send JSON with a question in it, like {\"question\": \"is the housing lottery random?\"}"}
+
+HTTP 400
+(.venv) ➜  ai201-project1-unofficial-guide-starter-v2026 git:(main) ✗ curl -s -X POST http://localhost:5001/ask -H 'Content-Type: application/json' -d '{"question": sdfsdsfsdf33}' -w "\nHTTP %{http_code}\n"
+{"error":"Send JSON with a question in it, like {\"question\": \"is the housing lottery random?\"}"}
+
+HTTP 400
+(.venv) ➜  ai201-project1-unofficial-guide-starter-v2026 git:(main) ✗ curl -s -X POST http://localhost:5001/ask -H 'Content-Type: application/json' -d '{"question": 123}' -w "\nHTTP %{http_code}\n"
+<!doctype html>
+<html lang=en>
+<title>500 Internal Server Error</title>
+<h1>Internal Server Error</h1>
+<p>The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application.</p>
+
+HTTP 500
+
+```
+
+
 ## The Improvement
 
 <!-- What you changed, why, and the second run log in the same format -->
 
+Fix to 500 error: 
+The cause: the line (payload.get("question") or "").strip() called .strip() on whatever the caller sent. A number or a list has no .strip(), so the route crashed with an AttributeError before it reached the error handling. Flask then returned an HTML 500 page.
+
+The fix:
+The body is only used if it's a JSON object. Invalid JSON, no body, or a body that is a list or number is treated as empty.
+A question only counts if it's a string. .strip() is called on it only after that check.
+The log now records exactly what was sent. For {"question": 123}, the log shows 123 and not an empty string.
+
+
 ## What's Still Broken
 
 <!-- What you'd do about each remaining miss, why you stopped, and the one thing you'd do first. If you met all five: which target you'd tighten, and to what -->
+I didn't get to test all the crteria. 
 
 Rate Limiting so I won't get 503 errors that say: `{"error":"ServerError: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}"}` Retrying during the brief seconds of the service being down. 
+
+I think I spent over 10 hours on this project and I still didn't finish. I spent too long tweaking what I wanted inputs and outputs to be and writing documentation and I should've scoped it better beforehand. My markdown reader extension glitched on me so it made the markdown very hard to read which caused a lot of trouble in documentation formating because the view would switch back and forth from the raw text version and the incorrectly displayed version. 
+
+Like usual, I struggled with coming up with good criteria. 
 
 ## How I Used AI
 
 <!-- Two specific moments — what you asked, what you got, what you changed -->
+
+I heavily relied on Claude for `serve.py` and `pretty_log.py` (deployment and logging).
+Unlike previously, I didn't write a lot of code. I basically was telling Claude what to do and what I wanted for the files.
+I had to change a lot of stuff like the output format and adding flags to turn off logging, log naming convention style, prettifying the output, etc. 
+I should have scoped better before I started because the python files and the RUNNING.md documentation for it took many many hours. 
+
+I asked Claude to help me calculate the costs for the What It Costs section. The numbers were from a log I ran. I grabbed the input and output costs and confirmed numbers and added more relevant information such as number of calls it would take to spend a dollar. 
+
+For everything Claude spit out, I had to test it and check it. 
+
+
+
+
 

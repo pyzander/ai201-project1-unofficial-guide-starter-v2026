@@ -168,9 +168,15 @@ def ask():
     from app import ask_pipeline
     import generate
 
-    payload = request.get_json(silent=True) or {}
-    question = (payload.get("question") or "").strip()
-    g.log_in["question"] = question
+    payload = request.get_json(silent=True)
+    if not isinstance(payload, dict):  # invalid JSON, no body, or a list/number
+        payload = {}
+
+    raw_question = payload.get("question")
+    # Only a string can be a question. Calling .strip() on a number or a list
+    # raised an AttributeError and came back as an HTML 500 page.
+    question = raw_question.strip() if isinstance(raw_question, str) else ""
+    g.log_in["question"] = raw_question  # log exactly what was sent
 
     if not question:
         message = (
