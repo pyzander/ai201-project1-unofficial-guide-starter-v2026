@@ -26,5 +26,11 @@ Thumbs.db
 # NOTE: results/ is deliberately NOT ignored. Your run logs are evidence that
 # the test actually happened, and they're part of what gets graded. Commit them.
 
+# Personal notes: command and outputs quick reference from Units 1 and 2 
 notes.txt
+
+# Personal notes: Week 1 feedback 
 week1feedback_fix.md
+
+# Personal annotated file map created during capstone
+project_map.md
