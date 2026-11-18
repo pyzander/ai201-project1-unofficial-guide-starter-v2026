@@ -28,7 +28,9 @@
 
      Milestone 5. -->
 
-i picked the corpus campus_life. As stated in corpus_info.py -> BLURBS, (or if you run `python app.py corpora`) That corpus contains "Short posts about student life. ~88 documents of 1–3 paragraphs." (Actually 7 documents contain 4 paragraphs: housing_aldridge_hall.txt, housing_calder_dannexe.txt, housing_fenwick_court.txt, housing_innisfree_hall.txt, housing_morrow_house.txt, housing_old_brewhouse.txt, and housing_tamsin_court.txt.) such as The system answers questions on student life such as when to declare a major and thoughts on certain classes, dining halls and housing. 
+I picked the corpus campus_life. As stated in corpus_info.py -> BLURBS, (or if you run `python app.py corpora`) That corpus contains "Short posts about student life. ~88 documents of 1–3 paragraphs." The system answers questions on student life such as when to declare a major and thoughts on certain classes, dining halls and housing. 
+
+##### (This is besides the point but actually 7 documents contain 4 paragraphs: housing_aldridge_hall.txt, housing_calder_dannexe.txt, housing_fenwick_court.txt, housing_innisfree_hall.txt, housing_morrow_house.txt, housing_old_brewhouse.txt, and housing_tamsin_court.txt.) 
 
 You can run this by doing 
 
@@ -975,5 +977,5 @@ python app.py ask "your question" --no-cache
 
 * RAG isn't really good at answering the more vague complex questions such as " What is the parking situation like near student housing?" resulted in no information despite there being info becuase AI couldn't confirm the [corpora/admin_parking_permits.txt](corpora/admin_parking_permits.txt) was referring to parking lots near student housing. It answered "Where can students park near student housing?" but specified if it wasn't sure if it was near student housing. The question that was most successful with consistent answers was more simple: "Where can students park?" 
     - Source: [Criteria evaluation in results run_before: Q5: parking situation near student housing](results/run_2026-10-07_0434_before.md#q5-what-is-the-parking-situation-like-near-student-housing)
-* Writing criteria is hard. I was confused about critieria throughout Units 1 and 2 but the project definitely helped me understand it more5 5
+* Writing criteria is hard. I was confused about critieria throughout Units 1 and 2 but the project definitely helped me understand it more.
 * tables in markdown are a pain. I use an extension to help with markdown but it doesn't let me edit tables because I'm not paying for it so editing the tables is a pain and since I wrote so much, it's so easy to get lost. 
