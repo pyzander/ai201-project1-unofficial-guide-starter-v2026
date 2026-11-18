@@ -217,7 +217,7 @@ gunicorn serve:app                 # the way a host starts it
 > the first request after a quiet spell waits roughly a minute for it to wake
 > up. That's the tier, not your code.
 
-`serve.py` writes one structured JSON line per request, with a timestamp, what came in, what came out and how long it took. Each time the server starts it opens a new log named for the moment it started, like `logs/requests_2026-11-18_105410.jsonl` (`requests_YYYY-MM-DD_HHMMSS.jsonl`). Set`AI201_LOG_FILE` to use a fixed file name instead.
+`serve.py` writes one structured JSON line per request, with a timestamp, what came in, what came out and how long it took. Each time the server starts it opens a new log named for the moment it started, like `logs/requests_2026-11-18_105410.jsonl` (`requests_YYYY-MM-DD_HHMMSS.jsonl`). Set `AI201_LOG_FILE` to use a fixed file name instead, or set `AI201_LOG=0` to turn logging off.
 
 ---
 
