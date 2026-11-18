@@ -1,6 +1,10 @@
 # The Unofficial Guide
 
+<sub>Link to this repo: https://github.com/pyzander/ai201-project1-unofficial-guide-starter-v2026 </sub>
+
 <!-- Replace this line with your name and which corpus you picked. -->
+
+<!-- 
 
 > **This file is your submission.** Fill it in as you go — most sections get
 > written during the milestone that produces them, not at the end.
@@ -11,16 +15,12 @@
 > **Paste everything as text.** No screenshots, no video. A typed table gets
 > full credit; a picture of the same table gets none.
 >
-> Delete these instruction blocks as you replace them. The `<!-- -->` comments
-
+> Delete these instruction blocks as you replace them. HTML comments `<!-- -- >` (remove the space between the `--` and `>`) 
 > are notes to you and don't show up when the page renders — you can leave them
 > or remove them.
+-->
 
----
-
-# Unit 1
-
-## What This Does
+# What This Does
 
 <!-- Three or four sentences. Which corpus you picked, and the kinds of
      questions your system answers. Write it for someone who has never seen
@@ -28,31 +28,82 @@
 
      Milestone 5. -->
 
-I picked the corpus campus_life. As stated in corpus_info.py -> BLURBS, (or if you run `python app.py corpora`) That corpus contains "Short posts about student life. ~88 documents of 1–3 paragraphs." The system answers questions on student life such as when to declare a major and thoughts on certain classes, dining halls and housing. 
+I picked the corpus `campus_life`. As stated in `corpus_info.py` -> [BLURBS](corpus_info.py#L13-L17), (or if you run `python app.py corpora`) That corpus contains 
 
-##### (This is besides the point but actually 7 documents contain 4 paragraphs: housing_aldridge_hall.txt, housing_calder_dannexe.txt, housing_fenwick_court.txt, housing_innisfree_hall.txt, housing_morrow_house.txt, housing_old_brewhouse.txt, and housing_tamsin_court.txt.) 
+> Short posts about student life. ~88 documents of 1–3 paragraphs.
 
-You can run this by doing 
+The system answers questions on student life such as when to declare a major and thoughts on certain classes, dining halls and housing. 
+
+<sub>(This is besides the point but the corpus actually contains 7 documents that contain 4 paragraphs: housing_aldridge_hall.txt, housing_calder_dannexe.txt, housing_fenwick_court.txt, housing_innisfree_hall.txt, housing_morrow_house.txt, housing_old_brewhouse.txt, and housing_tamsin_court.txt.)  </sub>
+
+First, clone the repo. 
+
+```
+git clone https://github.com/pyzander/ai201-project1-unofficial-guide-starter-v2026.git
+cd ai201-project1-unofficial-guide-starter-v2026
+```
+
+Then create the virtual environment, install what's in `requirements.txt` and make your `.env: `
+
+Note: the setup code states to do the `python -m pip install --upgrade pip` but you don't actually need it 
+
+macOS / Linux:
 
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
 
+# python -m pip install --upgrade pip
+
 pip install -r requirements.txt
 cp .env.example .env
 ```
 
-This creates a virtual environment and your .env file. You need to add to .env your environment your Google Gemini Key which can be copied and pasted from https://aistudio.google.com/api-keys
+Or if you have windows: 
+
+Windows (PowerShell)
+
+```bash
+python -m venv .venv
+.venv\Scripts\Activate.ps1
+
+# python -m pip install --upgrade pip
+
+pip install -r requirements.txt
+copy .env.example .env
+```
+
+This creates a virtual environment and your .env file. You need to add to .env your environment your Google Gemini Key which can be copied and pasted from https://aistudio.google.com/api-keys 
+
+Your `.env` file should look something like: 
+
+```
+GEMINI_API_KEY=AIzaSynHARc39yK6PDEMOvtarLNu0p-FvVZdQoA5G
+```
+
 Then run `python test.py` to test the environment and then `python app.py index` and after that you can ask it questions like below. 
 
 ```
 python test.py
 
 python app.py index
-python app.py ask "is the housing lottery random?"
+python app.py ask "Is the housing lottery random?"
+```
 
+And whenever you restart the project you can do the code below: 
 
 ```
+python3 -m venv .venv
+source .venv/bin/activate 
+# .venv\Scripts\Activate.ps1 # uncomment this out and do this instead of the above line if you have windows 
+
+python app.py index
+python app.py ask "Is the housing lottery random?"
+```
+
+# **Click to Jump to [Capstone Section](#capstone)**
+
+# Unit 1
 
 ## Chunking Strategy
 
@@ -979,3 +1030,42 @@ python app.py ask "your question" --no-cache
     - Source: [Criteria evaluation in results run_before: Q5: parking situation near student housing](results/run_2026-10-07_0434_before.md#q5-what-is-the-parking-situation-like-near-student-housing)
 * Writing criteria is hard. I was confused about critieria throughout Units 1 and 2 but the project definitely helped me understand it more.
 * tables in markdown are a pain. I use an extension to help with markdown but it doesn't let me edit tables because I'm not paying for it so editing the tables is a pain and since I wrote so much, it's so easy to get lost. 
+
+# Capstone 
+
+# The Shape and Run Path 
+
+## Shape
+
+The three shapes are: A: Deploy and instrument, B: Harden against failure and C: Extend one capability. B and C deploy and instrument as well, they just include doing more as well. 
+
+I am choosing **shape A**: 
+
+> A — Deploy and instrument. Take a system that only ever ran on your laptop and put it somewhere it runs on its own, with logging and measurement around it. The extension is the operational layer: the run path, the instrumentation, and the numbers that come out of it.
+>
+> Whichever you pick, all three still deploy and instrument — shape A just makes that the whole job, while B and C carry it alongside. The run path and the log are required in every case.
+
+## Run path: 
+
+Of the two run paths, I chose **Path B: local with logs**, rather than Path A, which is hosted at a URL as well as everything Path B asks for.
+
+Here is what the instructions state about it: 
+
+> Path B — local with logs. Your system runs on your machine, started by a single documented command, with a committed record of it actually running. You include:
+>
+> * The exact command that starts it, in RUNNING.md, tested from a clean checkout
+> * A committed run record — your structured log from a real session, pasted as text
+> * What the environment needs: Python version, the pinned dependencies, any model files and their size
+>
+> Path B is the one most of you will take.
+>
+> Path B asks you to make the run reproducible for someone who isn't you, which is most of what deployment actually is. What both paths must prove is the same thing: this ran somewhere, more than once, and there's a record of it.
+
+# Out of Scope 
+
+* Fixing the chunking: I've mentioned that I didn't like the way I did the chunking previously but since are not re-writing our past mistakes here, I am not fixing that. Ideally, I would've loved to choose a different corpus that didn't do so well initially and fixed the chunky for that. 
+* A User Interface: Nice to have but too much work. 
+* Path A — hosting. 
+
+
+
