@@ -26,11 +26,11 @@ Thumbs.db
 # NOTE: results/ is deliberately NOT ignored. Your run logs are evidence that
 # the test actually happened, and they're part of what gets graded. Commit them.
 
-# Personal notes: command and outputs quick reference from Units 1 and 2 
-notes.txt
+# Personal notes, file map and capstone planning notes (all in personal/)
+personal/
 
-# Personal notes: Week 1 feedback 
-week1feedback_fix.md
-
-# Personal annotated file map created during capstone
-project_map.md
+# Sample logs from testing serve.py; the real run record, logs/requests_YYYY-MM-DD_HHMMSS.jsonl, is committed
+logs/sample*
+logs/practice*
+logs/requests.jsonl
+logs/requests.pretty.json
