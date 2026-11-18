@@ -1119,6 +1119,8 @@ Here is what the instructions state about it:
 
 <!-- What each log record holds, and at least ten entries pasted as text -->
 
+> [!TIP]
+> Go to the [logs/](logs/) folder to view the logs. Each time the server starts, it writes a new file named for its start time in local time, such as `logs/requests_2026-11-18_105410.jsonl` (`requests_YYYY-MM-DD_HHMMSS.jsonl`). Each line in the file represents one request.
 
 
 ## What It Costs
