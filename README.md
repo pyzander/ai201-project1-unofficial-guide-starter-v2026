@@ -20,7 +20,7 @@
 > or remove them.
 -->
 
-# What This Does
+# What This Does and How to Run It
 
 <!-- Three or four sentences. Which corpus you picked, and the kinds of
      questions your system answers. Write it for someone who has never seen
@@ -28,13 +28,29 @@
 
      Milestone 5. -->
 
-I picked the corpus `campus_life`. As stated in `corpus_info.py` -> [BLURBS](corpus_info.py#L13-L17), (or if you run `python app.py corpora`) That corpus contains 
+## Overview 
+
+Units 1 and 2 covered building and testing a **Retrieval-Augmented Generation (RAG)** system. A RAG system retrieves relevant passages from a knowledge base and has the model answer using only those passages. 
+
+This project builds a RAG pipeline using the `campus_life` corpus. The capstone adds the operational layer: running it locally with logs that record a real run.
+
+As stated in `corpus_info.py` -> [BLURBS](corpus_info.py#L13-L17), (or if you run `python app.py corpora`) The `campus_life` corpus contains 
 
 > Short posts about student life. ~88 documents of 1–3 paragraphs.
 
 The system answers questions on student life such as when to declare a major and thoughts on certain classes, dining halls and housing. 
 
-<sub>(This is besides the point but the corpus actually contains 7 documents that contain 4 paragraphs: housing_aldridge_hall.txt, housing_calder_dannexe.txt, housing_fenwick_court.txt, housing_innisfree_hall.txt, housing_morrow_house.txt, housing_old_brewhouse.txt, and housing_tamsin_court.txt.)  </sub>
+The documents in the knowledge base can be found here: [corpora/campus_life/documents](corpora/campus_life/documents/)
+
+<sub>Side note: 7 documents have 4 paragraphs, not the 1–3 the blurb states: [`housing_aldridge_hall.txt`](corpora/campus_life/documents/housing_aldridge_hall.txt), [`housing_calder_annexe.txt`](corpora/campus_life/documents/housing_calder_annexe.txt), [`housing_fenwick_court.txt`](corpora/campus_life/documents/housing_fenwick_court.txt), [`housing_innisfree_hall.txt`](corpora/campus_life/documents/housing_innisfree_hall.txt), [`housing_morrow_house.txt`](corpora/campus_life/documents/housing_morrow_house.txt), [`housing_old_brewhouse.txt`](corpora/campus_life/documents/housing_old_brewhouse.txt), and [`housing_tamsin_court.txt`](corpora/campus_life/documents/housing_tamsin_court.txt).  </sub>
+
+> [!TIP]
+>
+> Go to [corpora/README.md](corpora/README.md) for a full description on the all the corpa. 
+
+## How to Run It 
+
+<sub> Comands for clone, .env, venv, python </sub>
 
 First, clone the repo. 
 
@@ -63,7 +79,7 @@ Or if you have windows:
 
 Windows (PowerShell)
 
-```bash
+```powershell
 python -m venv .venv
 .venv\Scripts\Activate.ps1
 
@@ -73,7 +89,7 @@ pip install -r requirements.txt
 copy .env.example .env
 ```
 
-This creates a virtual environment and your .env file. You need to add to .env your environment your Google Gemini Key which can be copied and pasted from https://aistudio.google.com/api-keys 
+This creates a virtual environment and your `.env` file. You need to add to `.env` your Google Gemini Key which can be copied and pasted from https://aistudio.google.com/api-keys.
 
 Your `.env` file should look something like: 
 
@@ -83,22 +99,33 @@ GEMINI_API_KEY=AIzaSynHARc39yK6PDEMOvtarLNu0p-FvVZdQoA5G
 
 Then run `python test.py` to test the environment and then `python app.py index` and after that you can ask it questions like below. 
 
-```
+```bash
 python test.py
 
 python app.py index
 python app.py ask "Is the housing lottery random?"
 ```
 
-And whenever you restart the project you can do the code below: 
+> [!TIP]
+>
+> Whenever you come back to the project you can just restart the environment and get right to asking. 
+>
+> After the first time, you don't need to run `python app.py index` again, because the index is saved in your local `chroma_db/` folder. Only re-run it if you change the chunking in [chunker.py](chunker.py), the [embedding model](config.py#L60), or the corpus. 
+>
+> Another tip: When you're finished, run deactivate to exit the virtual environment and return to your normal shell.
 
-```
-python3 -m venv .venv
+macOS / Linux:
+
+```bash
 source .venv/bin/activate 
-# .venv\Scripts\Activate.ps1 # uncomment this out and do this instead of the above line if you have windows 
-
-python app.py index
 python app.py ask "Is the housing lottery random?"
+```
+
+or in Windows: 
+
+```powershell
+.venv\Scripts\Activate.ps1 
+python app.py index
 ```
 
 # **Click to Jump to [Capstone Section](#capstone)**
@@ -1063,9 +1090,6 @@ Here is what the instructions state about it:
 
 # Out of Scope 
 
-* Fixing the chunking: I've mentioned that I didn't like the way I did the chunking previously but since are not re-writing our past mistakes here, I am not fixing that. Ideally, I would've loved to choose a different corpus that didn't do so well initially and fixed the chunky for that. 
+* Fixing the chunking: I've mentioned that I didn't like the way I did the chunking previously but since are not re-writing our past mistakes here, I am not fixing that. Ideally, I would've loved to choose a different corpus that didn't do so well initially and fixed the chunky for that. Bringing in my own documents would've been super cool as well. 
 * A User Interface: Nice to have but too much work. 
 * Path A — hosting. 
-
-
-
