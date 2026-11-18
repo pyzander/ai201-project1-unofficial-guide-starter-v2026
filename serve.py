@@ -20,20 +20,113 @@ Why this exists: `app.py` runs once and exits, which is fine on your laptop
 and impossible to deploy. A hosted service has to stay up and wait for
 requests. This is the smallest thing that does that.
 
-⚠️ There is deliberately no logging, no timing and no metrics in this file.
-Unit 9 has you build the structured log yourself — the request line, the
-timing field everyone skips, the whole instrument-before-you-deploy exercise.
-Shipping a logger here would hand you the answer to that. Add yours in unit 9;
-this file stays the bare shell until then.
+Instrumentation (capstone): every request writes one structured JSON line to
+`logs/requests_<start time>.jsonl` (override with AI201_LOG_FILE) and to the
+console. Set AI201_LOG=0 to turn logging off. Each record has at least four
+fields:
+
+    timestamp    when the request arrived (UTC, ISO 8601)
+    in           what came in: method, path and, for /ask, the question
+    out          what came out: status code and, for /ask, the answer
+    latency_ms   how long the whole request took
+
+/ask records also carry the pieces needed for the cost and debugging sections:
+retrieval_ms and generation_ms, whether the gate refused it, the best
+distance, the sources, how many model calls it made, and the tokens it used.
 """
 
+import json
+import logging
 import os
+import sys
+import time
+import uuid
+from datetime import datetime, timezone
+from pathlib import Path
 
-from flask import Flask, jsonify, request
+from flask import Flask, g, jsonify, request
 
 import config
 
 app = Flask(__name__)
+
+
+# ─── Structured log ──────────────────────────────────────────────────────────
+
+# One log file per server start, named for the moment the server started, e.g.
+# logs/requests_2026-11-18_093015.jsonl (local time). Set AI201_LOG_FILE to use
+# a fixed name instead.
+#
+# Logging is on by default. Set AI201_LOG=0 to turn it off: nothing is written
+# to the file or the console, and no logs/ folder is created.
+LOGGING_ENABLED = os.getenv("AI201_LOG", "1") != "0"
+_STARTED_AT = datetime.now().strftime("%Y-%m-%d_%H%M%S")
+LOG_FILE = Path(
+    os.getenv(
+        "AI201_LOG_FILE",
+        config.ROOT / "logs" / f"requests_{_STARTED_AT}.jsonl",
+    )
+)
+
+
+def _build_logger() -> logging.Logger:
+    """One logger, two handlers: the JSONL file (the record) and stdout."""
+    logger = logging.getLogger("unofficial_guide.requests")
+    if logger.handlers:  # already set up; the reloader imports this twice
+        return logger
+
+    logger.setLevel(logging.INFO)
+    logger.propagate = False
+
+    if not LOGGING_ENABLED:
+        logger.addHandler(logging.NullHandler())  # swallow records, write nothing
+        return logger
+
+    LOG_FILE.parent.mkdir(parents=True, exist_ok=True)
+    for handler in (
+        # delay=True: don't create the file until the first request is logged,
+        # so a process that never serves one (like the debug reloader's
+        # parent) doesn't leave an empty file behind.
+        logging.FileHandler(LOG_FILE, encoding="utf-8", delay=True),
+        logging.StreamHandler(sys.stdout),
+    ):
+        handler.setFormatter(logging.Formatter("%(message)s"))
+        logger.addHandler(handler)
+    return logger
+
+
+_log = _build_logger()
+
+
+@app.before_request
+def _start_timer():
+    g.started = time.perf_counter()
+    g.request_id = uuid.uuid4().hex[:12]
+    g.log_in = {}    # extra fields about what came in
+    g.log_out = {}   # extra fields about what came out
+    g.log_extra = {}  # timings, tokens, gate decision, errors
+
+
+@app.after_request
+def _write_log_record(response):
+    """One JSON object per request, written after the response is built.
+
+    Runs for every route, including the 400 and 500 paths, so a failing
+    request still leaves a line behind. Does nothing when AI201_LOG=0.
+    """
+    if not LOGGING_ENABLED:
+        return response
+
+    record = {
+        "timestamp": datetime.now(timezone.utc).isoformat(timespec="milliseconds"),
+        "request_id": g.request_id,
+        "in": {"method": request.method, "path": request.path, **g.log_in},
+        "out": {"status": response.status_code, **g.log_out},
+        "latency_ms": round((time.perf_counter() - g.started) * 1000, 1),
+        **g.log_extra,
+    }
+    _log.info(json.dumps(record, ensure_ascii=False))
+    return response
 
 
 @app.get("/health")
@@ -49,6 +142,7 @@ def health():
     from store import index_exists
 
     ready = index_exists(config.CORPUS)
+    g.log_out["index_ready"] = ready
     return jsonify(
         {
             "status": "ok",
@@ -72,25 +166,68 @@ def ask():
     `"refused": true` so whatever calls this can tell the two apart.
     """
     from app import ask_pipeline
+    import generate
 
     payload = request.get_json(silent=True) or {}
     question = (payload.get("question") or "").strip()
+    g.log_in["question"] = question
 
     if not question:
-        return (
-            jsonify(
-                {
-                    "error": "Send JSON with a question in it, like "
-                    '{"question": "is the housing lottery random?"}'
-                }
-            ),
-            400,
+        message = (
+            "Send JSON with a question in it, like "
+            '{"question": "is the housing lottery random?"}'
         )
+        g.log_out["error"] = message
+        return jsonify({"error": message}), 400
+
+    # on_gate fires the moment retrieval and the gate have finished, which
+    # splits the request into "found the chunks" and "wrote the answer"
+    # without touching app.py.
+    marks = {}
+
+    def mark_gate(decision):
+        marks["gate_done"] = time.perf_counter()
+
+    calls_before = generate.call_count()
+    tokens_before = generate.token_counts()
 
     try:
-        outcome = ask_pipeline(question, corpus=config.CORPUS)
+        outcome = ask_pipeline(question, corpus=config.CORPUS, on_gate=mark_gate)
     except Exception as exc:  # noqa: BLE001 — a reader gets this, not a traceback
-        return jsonify({"error": f"{type(exc).__name__}: {exc}"}), 500
+        message = f"{type(exc).__name__}: {exc}"
+        g.log_out["error"] = message
+        g.log_extra["error_type"] = type(exc).__name__
+        return jsonify({"error": message}), 500
+
+    ended = time.perf_counter()
+    gate_done = marks.get("gate_done", ended)
+    calls = generate.call_count() - calls_before
+    tokens_after = generate.token_counts()
+
+    g.log_out.update(
+        answer=outcome["answer"],
+        refused=outcome["refused"],
+        sources=outcome["sources"],
+    )
+    retrieval_ms = round((gate_done - g.started) * 1000, 1)
+    generation_ms = round((ended - gate_done) * 1000, 1)
+    # An answered question that made no model call came out of the cache.
+    cache_hit = (not outcome["refused"]) and calls == 0
+    tokens = {
+        "prompt": tokens_after["prompt"] - tokens_before["prompt"],
+        "output": tokens_after["output"] - tokens_before["output"],
+    }
+
+    g.log_extra.update(
+        corpus=config.CORPUS,
+        best_distance=round(outcome["best_distance"], 4),
+        threshold=outcome["threshold"],
+        retrieval_ms=retrieval_ms,
+        generation_ms=generation_ms,
+        model_calls=calls,
+        cache_hit=cache_hit,
+        tokens=tokens,
+    )
 
     return jsonify(
         {
@@ -101,6 +238,18 @@ def ask():
             "best_distance": round(outcome["best_distance"], 4),
             "threshold": outcome["threshold"],
             "corpus": config.CORPUS,
+            # The same numbers the log records, so the caller can see them too.
+            # latency_ms here stops when the answer is ready; the logged
+            # latency_ms also counts building this reply, so it is slightly
+            # larger.
+            "metrics": {
+                "latency_ms": round((ended - g.started) * 1000, 1),
+                "retrieval_ms": retrieval_ms,
+                "generation_ms": generation_ms,
+                "model_calls": calls,
+                "tokens": tokens,
+                "cache_hit": cache_hit,
+            },
         }
     )
 
