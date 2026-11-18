@@ -1,0 +1,112 @@
+[
+  {
+    "timestamp": "2026-11-18T22:50:13.434+00:00",
+    "request_id": "189ed887521c",
+    "in": {
+      "method": "POST",
+      "path": "/ask",
+      "question": ""
+    },
+    "out": {
+      "status": 400,
+      "error": "Send JSON with a question in it, like {\"question\": \"is the housing lottery random?\"}"
+    },
+    "latency_ms": 2.6
+  },
+  {
+    "timestamp": "2026-11-18T22:50:26.373+00:00",
+    "request_id": "2a058f8e4f58",
+    "in": {
+      "method": "POST",
+      "path": "/ask",
+      "question": ""
+    },
+    "out": {
+      "status": 400,
+      "error": "Send JSON with a question in it, like {\"question\": \"is the housing lottery random?\"}"
+    },
+    "latency_ms": 0.3
+  },
+  {
+    "timestamp": "2026-11-18T22:50:34.418+00:00",
+    "request_id": "8b73320d13a2",
+    "in": {
+      "method": "POST",
+      "path": "/ask",
+      "question": ""
+    },
+    "out": {
+      "status": 400,
+      "error": "Send JSON with a question in it, like {\"question\": \"is the housing lottery random?\"}"
+    },
+    "latency_ms": 0.3
+  },
+  {
+    "timestamp": "2026-11-18T22:50:46.127+00:00",
+    "request_id": "9687ef23ffba",
+    "in": {
+      "method": "POST",
+      "path": "/ask",
+      "question": ""
+    },
+    "out": {
+      "status": 400,
+      "error": "Send JSON with a question in it, like {\"question\": \"is the housing lottery random?\"}"
+    },
+    "latency_ms": 0.2
+  },
+  {
+    "timestamp": "2026-11-18T22:51:49.054+00:00",
+    "request_id": "584ba7a18e4a",
+    "in": {
+      "method": "POST",
+      "path": "/ask",
+      "question": ""
+    },
+    "out": {
+      "status": 400,
+      "error": "Send JSON with a question in it, like {\"question\": \"is the housing lottery random?\"}"
+    },
+    "latency_ms": 0.2
+  },
+  {
+    "timestamp": "2026-11-18T22:52:03.390+00:00",
+    "request_id": "4eace25645d4",
+    "in": {
+      "method": "POST",
+      "path": "/ask",
+      "question": ""
+    },
+    "out": {
+      "status": 400,
+      "error": "Send JSON with a question in it, like {\"question\": \"is the housing lottery random?\"}"
+    },
+    "latency_ms": 0.2
+  },
+  {
+    "timestamp": "2026-11-18T22:53:28.912+00:00",
+    "request_id": "9ecce0ae1e2a",
+    "in": {
+      "method": "POST",
+      "path": "/ask",
+      "question": ""
+    },
+    "out": {
+      "status": 400,
+      "error": "Send JSON with a question in it, like {\"question\": \"is the housing lottery random?\"}"
+    },
+    "latency_ms": 0.1
+  },
+  {
+    "timestamp": "2026-11-18T22:53:38.161+00:00",
+    "request_id": "79d278e9cca2",
+    "in": {
+      "method": "POST",
+      "path": "/ask"
+    },
+    "out": {
+      "status": 500
+    },
+    "latency_ms": 3.4
+  }
+]

@@ -1,0 +1,419 @@
+[
+  {
+    "timestamp": "2026-11-18T17:24:29.898+00:00",
+    "request_id": "0f8d5b059791",
+    "in": {
+      "method": "POST",
+      "path": "/ask",
+      "question": "Is the housing lottery random?"
+    },
+    "out": {
+      "status": 200,
+      "answer": "The housing lottery is not entirely random for everyone. While rising sophomores get a number drawn at random, juniors and seniors are ordered first by accumulated credit hours, with random tie-breaks used only afterward (*admin_housing_lottery.txt*).",
+      "refused": false,
+      "sources": [
+        "admin_housing_lottery.txt",
+        "admin_parking_permits.txt",
+        "advising_registration.txt",
+        "housing_aldridge_hall.txt",
+        "housing_innisfree_hall.txt",
+        "housing_morrow_house.txt"
+      ]
+    },
+    "latency_ms": 3173.8,
+    "corpus": "campus_life",
+    "best_distance": 0.2541,
+    "threshold": 0.6,
+    "retrieval_ms": 1449.0,
+    "generation_ms": 1724.5,
+    "model_calls": 1,
+    "cache_hit": false,
+    "tokens": {
+      "prompt": 629,
+      "output": 51
+    }
+  },
+  {
+    "timestamp": "2026-11-18T17:24:30.921+00:00",
+    "request_id": "563fcdd1c419",
+    "in": {
+      "method": "POST",
+      "path": "/ask",
+      "question": "Which halls are quiet?"
+    },
+    "out": {
+      "status": 200,
+      "answer": "Based on the provided documents, Tamsin Court is noted as being quiet structurally due to concrete floors between units (housing_tamsin_court_noise.txt), and Aldridge Hall has quiet floors on levels 3 and 4 that are genuinely enforced (housing_aldridge_hall_noise.txt). Additionally, for Innisfree Hall, the short wing of the L-shaped building is described as much quieter (housing_innisfree_hall_noise.txt).",
+      "refused": false,
+      "sources": [
+        "housing_aldridge_hall_noise.txt",
+        "housing_calder_annexe_noise.txt",
+        "housing_fenwick_court_noise.txt",
+        "housing_innisfree_hall.txt",
+        "housing_innisfree_hall_noise.txt",
+        "housing_morrow_house_noise.txt",
+        "housing_old_brewhouse_noise.txt",
+        "housing_tamsin_court_noise.txt"
+      ]
+    },
+    "latency_ms": 1003.6,
+    "corpus": "campus_life",
+    "best_distance": 0.3703,
+    "threshold": 0.6,
+    "retrieval_ms": 71.1,
+    "generation_ms": 932.2,
+    "model_calls": 1,
+    "cache_hit": false,
+    "tokens": {
+      "prompt": 745,
+      "output": 100
+    }
+  },
+  {
+    "timestamp": "2026-11-18T17:24:37.487+00:00",
+    "request_id": "ea9be14d2b5f",
+    "in": {
+      "method": "POST",
+      "path": "/ask",
+      "question": "Which halls are loud?"
+    },
+    "out": {
+      "status": 200,
+      "answer": "Based on the provided documents, Morrow House is loud until about 1am on weekends and has no enforced quiet hours (housing_morrow_house_noise.txt). Additionally, in Old Brewhouse, sound carries strangely due to the original brick, making a room two floors up potentially louder than next door (housing_old_brewhouse_noise.txt).",
+      "refused": false,
+      "sources": [
+        "housing_aldridge_hall_noise.txt",
+        "housing_calder_annexe_noise.txt",
+        "housing_fenwick_court_noise.txt",
+        "housing_innisfree_hall.txt",
+        "housing_innisfree_hall_noise.txt",
+        "housing_morrow_house_noise.txt",
+        "housing_old_brewhouse_noise.txt",
+        "housing_tamsin_court_noise.txt"
+      ]
+    },
+    "latency_ms": 6544.0,
+    "corpus": "campus_life",
+    "best_distance": 0.4221,
+    "threshold": 0.6,
+    "retrieval_ms": 58.3,
+    "generation_ms": 6485.4,
+    "model_calls": 1,
+    "cache_hit": false,
+    "tokens": {
+      "prompt": 745,
+      "output": 75
+    }
+  },
+  {
+    "timestamp": "2026-11-18T17:24:44.335+00:00",
+    "request_id": "a2d3713aef32",
+    "in": {
+      "method": "POST",
+      "path": "/ask",
+      "question": "What do students say about wait times at Commons during lunch?"
+    },
+    "out": {
+      "status": 200,
+      "answer": "Students state that the wait time at Kestrel Commons is 20 to 25 minutes between 12:15 and 1:00, and under 5 minutes before 11:45. \n\nSource: `dining_kestrel_commons.txt` (and also mentioned in `dining_kestrel_commons_followup.txt`).",
+      "refused": false,
+      "sources": [
+        "dining_halden_hall_followup.txt",
+        "dining_kestrel_commons.txt",
+        "dining_kestrel_commons_followup.txt",
+        "dining_north_kitchen_followup.txt",
+        "dining_pellew_dining_hall_followup.txt",
+        "dining_the_atrium_followup.txt",
+        "dining_the_ridgeway_cafe_followup.txt",
+        "dining_verrill_street_grill_followup.txt"
+      ]
+    },
+    "latency_ms": 6829.3,
+    "corpus": "campus_life",
+    "best_distance": 0.308,
+    "threshold": 0.6,
+    "retrieval_ms": 60.9,
+    "generation_ms": 6768.0,
+    "model_calls": 1,
+    "cache_hit": false,
+    "tokens": {
+      "prompt": 905,
+      "output": 78
+    }
+  },
+  {
+    "timestamp": "2026-11-18T17:24:50.939+00:00",
+    "request_id": "18bfaa17bdd0",
+    "in": {
+      "method": "POST",
+      "path": "/ask",
+      "question": "What do students say about CS 210?"
+    },
+    "out": {
+      "status": 200,
+      "answer": "Students advise doing the labs for CS 210 even though they are only 10%, because the exams reuse the lab problems. Additionally, students note to expect 8 to 10 hours a week outside of class, which is real time and front-loaded (the first month is heavier than the rest). \n\nSource files: `course_cs_210.txt`, `course_cs_210_exams.txt`, and `course_cs_210_workload.txt`.",
+      "refused": false,
+      "sources": [
+        "course_cs_210.txt",
+        "course_cs_210_exams.txt",
+        "course_cs_210_workload.txt",
+        "course_cs_340.txt",
+        "course_cs_340_exams.txt",
+        "course_engl_205.txt"
+      ]
+    },
+    "latency_ms": 6580.9,
+    "corpus": "campus_life",
+    "best_distance": 0.3906,
+    "threshold": 0.6,
+    "retrieval_ms": 59.2,
+    "generation_ms": 6521.4,
+    "model_calls": 1,
+    "cache_hit": false,
+    "tokens": {
+      "prompt": 654,
+      "output": 109
+    }
+  },
+  {
+    "timestamp": "2026-11-18T17:24:52.733+00:00",
+    "request_id": "aa5822a29003",
+    "in": {
+      "method": "POST",
+      "path": "/ask",
+      "question": "What time is dinner served in dining halls?"
+    },
+    "out": {
+      "status": 200,
+      "answer": "Based on the provided documents:\n- Pellew Dining Hall is open daily from 7:00am to 8:00pm (*dining_pellew_dining_hall.txt*).\n- Halden Hall closes at 7:00pm on weekdays and is closed Sundays (*dining_halden_hall.txt* and *dining_halden_hall_followup.txt*). \n\nThe documents do not provide specific dinner hours for the other dining locations.",
+      "refused": false,
+      "sources": [
+        "dining_halden_hall.txt",
+        "dining_halden_hall_followup.txt",
+        "dining_kestrel_commons_followup.txt",
+        "dining_north_kitchen_followup.txt",
+        "dining_pellew_dining_hall.txt",
+        "dining_pellew_dining_hall_followup.txt",
+        "dining_the_atrium.txt"
+      ]
+    },
+    "latency_ms": 1769.3,
+    "corpus": "campus_life",
+    "best_distance": 0.3852,
+    "threshold": 0.6,
+    "retrieval_ms": 82.4,
+    "generation_ms": 1686.5,
+    "model_calls": 1,
+    "cache_hit": false,
+    "tokens": {
+      "prompt": 831,
+      "output": 103
+    }
+  },
+  {
+    "timestamp": "2026-11-18T17:24:57.093+00:00",
+    "request_id": "8e90b3cdc31f",
+    "in": {
+      "method": "POST",
+      "path": "/ask",
+      "question": "What do students say about the library?"
+    },
+    "out": {
+      "status": 200,
+      "answer": "Based on the documents provided, students or residents end up going to the library to work when they need quiet, as it is open until 2am during term (found in `housing_aldridge_hall_noise.txt`, `housing_innisfree_hall_noise.txt`, `housing_morrow_house_noise.txt`, `housing_calder_annexe_noise.txt`, and `housing_tamsin_court_noise.txt`). Additionally, regarding seating and hours, the library is open until 2am during term and until 10pm during reading week, the third floor is silent and enforced, the second floor is quiet in theory, and the basement has outlets at every seat making it full from about 10am (`study_library_hours.txt`).",
+      "refused": false,
+      "sources": [
+        "admin_library_holds.txt",
+        "housing_aldridge_hall_noise.txt",
+        "housing_calder_annexe_noise.txt",
+        "housing_innisfree_hall_noise.txt",
+        "housing_morrow_house_noise.txt",
+        "housing_tamsin_court_noise.txt",
+        "money_textbooks.txt",
+        "study_library_hours.txt"
+      ]
+    },
+    "latency_ms": 4330.7,
+    "corpus": "campus_life",
+    "best_distance": 0.4956,
+    "threshold": 0.6,
+    "retrieval_ms": 63.6,
+    "generation_ms": 4266.9,
+    "model_calls": 1,
+    "cache_hit": false,
+    "tokens": {
+      "prompt": 741,
+      "output": 167
+    }
+  },
+  {
+    "timestamp": "2026-11-18T17:25:04.712+00:00",
+    "request_id": "929e430102ad",
+    "in": {
+      "method": "POST",
+      "path": "/ask",
+      "question": "Where can students park?"
+    },
+    "out": {
+      "status": 200,
+      "answer": "Students can park in the west lots (if they purchase a permit in August), the east lot (which never sells out), or on Verrill Street if they miss the permit window. \n\nSource: \n- [admin_parking_permits.txt]",
+      "refused": false,
+      "sources": [
+        "admin_parking_permits.txt",
+        "dining_north_kitchen_followup.txt",
+        "dining_verrill_street_grill.txt",
+        "housing_fenwick_court.txt",
+        "housing_old_brewhouse.txt",
+        "transit_shuttle.txt",
+        "transit_walking.txt"
+      ]
+    },
+    "latency_ms": 7595.3,
+    "corpus": "campus_life",
+    "best_distance": 0.5253,
+    "threshold": 0.6,
+    "retrieval_ms": 87.5,
+    "generation_ms": 7507.6,
+    "model_calls": 1,
+    "cache_hit": false,
+    "tokens": {
+      "prompt": 633,
+      "output": 54
+    }
+  },
+  {
+    "timestamp": "2026-11-18T17:25:04.806+00:00",
+    "request_id": "594c3004a9cc",
+    "in": {
+      "method": "POST",
+      "path": "/ask",
+      "question": "What is the capital of Mongolia?"
+    },
+    "out": {
+      "status": 200,
+      "answer": "I don't have enough information about that.",
+      "refused": true,
+      "sources": []
+    },
+    "latency_ms": 69.7,
+    "corpus": "campus_life",
+    "best_distance": 0.8246,
+    "threshold": 0.6,
+    "retrieval_ms": 69.6,
+    "generation_ms": 0.0,
+    "model_calls": 0,
+    "cache_hit": false,
+    "tokens": {
+      "prompt": 0,
+      "output": 0
+    }
+  },
+  {
+    "timestamp": "2026-11-18T17:25:04.874+00:00",
+    "request_id": "595ba68b6014",
+    "in": {
+      "method": "POST",
+      "path": "/ask",
+      "question": "How do I change the oil in a diesel engine?"
+    },
+    "out": {
+      "status": 200,
+      "answer": "I don't have enough information about that.",
+      "refused": true,
+      "sources": []
+    },
+    "latency_ms": 57.9,
+    "corpus": "campus_life",
+    "best_distance": 0.9231,
+    "threshold": 0.6,
+    "retrieval_ms": 57.8,
+    "generation_ms": 0.0,
+    "model_calls": 0,
+    "cache_hit": false,
+    "tokens": {
+      "prompt": 0,
+      "output": 0
+    }
+  },
+  {
+    "timestamp": "2026-11-18T17:25:04.943+00:00",
+    "request_id": "1c3c1ddcec47",
+    "in": {
+      "method": "POST",
+      "path": "/ask",
+      "question": "Who won the 1994 World Cup?"
+    },
+    "out": {
+      "status": 200,
+      "answer": "I don't have enough information about that.",
+      "refused": true,
+      "sources": []
+    },
+    "latency_ms": 58.3,
+    "corpus": "campus_life",
+    "best_distance": 0.8859,
+    "threshold": 0.6,
+    "retrieval_ms": 58.2,
+    "generation_ms": 0.0,
+    "model_calls": 0,
+    "cache_hit": false,
+    "tokens": {
+      "prompt": 0,
+      "output": 0
+    }
+  },
+  {
+    "timestamp": "2026-11-18T17:25:05.017+00:00",
+    "request_id": "3c1dd73c917d",
+    "in": {
+      "method": "POST",
+      "path": "/ask",
+      "question": "What is the recommended dosage of ibuprofen for a headache?"
+    },
+    "out": {
+      "status": 200,
+      "answer": "I don't have enough information about that.",
+      "refused": true,
+      "sources": []
+    },
+    "latency_ms": 64.4,
+    "corpus": "campus_life",
+    "best_distance": 0.8487,
+    "threshold": 0.6,
+    "retrieval_ms": 64.3,
+    "generation_ms": 0.0,
+    "model_calls": 0,
+    "cache_hit": false,
+    "tokens": {
+      "prompt": 0,
+      "output": 0
+    }
+  },
+  {
+    "timestamp": "2026-11-18T17:25:05.087+00:00",
+    "request_id": "d8e03864e675",
+    "in": {
+      "method": "POST",
+      "path": "/ask",
+      "question": "How do I write a for loop in Rust?"
+    },
+    "out": {
+      "status": 200,
+      "answer": "I don't have enough information about that.",
+      "refused": true,
+      "sources": []
+    },
+    "latency_ms": 60.6,
+    "corpus": "campus_life",
+    "best_distance": 0.8635,
+    "threshold": 0.6,
+    "retrieval_ms": 60.6,
+    "generation_ms": 0.0,
+    "model_calls": 0,
+    "cache_hit": false,
+    "tokens": {
+      "prompt": 0,
+      "output": 0
+    }
+  }
+]
