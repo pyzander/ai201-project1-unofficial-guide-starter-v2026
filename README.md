@@ -1069,15 +1069,17 @@ Units 1 and 2 builds and tests a RAG pipeline using the `campus_life` corpus. Th
 
 Files changed for the capstone. Note: the wording is directly from the instructions:
 
-* `criteria.md`: Five numbered criteria, each with a target and a reason, plus any revisions written underneath the originals. 
+* [`criteria.md`](criteria.md): Five numbered criteria, each with a target and a reason, plus any revisions written underneath the originals. 
     - All five criteria describe an action a reader could perform and an outcome they could check, without asking the student what they meant.
     - All five criteria carry a reason, and at least three reference something specific about this system, its extension, or the cost of being wrong.
     - At least three criteria test the extension, the run path, or the instrumentation — the work done this unit.
-* `RUNNING.md`: 
+* [`RUNNING.md`](RUNNING.md): 
     - The run path — a URL and how it got there, or the start command and the environment it needs
         - Includes start command plus the Python version, the dependencies, and any model files with their sizes
 * `README.md`: Nine sections added under Capstone
-* At least eight new commits from this unit, with `criteria.md` committed before any results, and both of those commits named in their messages
+* At least eight new commits from this unit, with [`criteria.md`](criteria.md) committed before any results, and both of those commits named in their messages
+
+* [`serve.py.`](serve.py) - for logging 
 
 ## The Shape
 
@@ -1814,7 +1816,7 @@ Like usual, I struggled with coming up with good criteria.
 
 <!-- Two specific moments — what you asked, what you got, what you changed -->
 
-I heavily relied on Claude for `serve.py` and `pretty_log.py` (deployment and logging).
+I heavily relied on Claude for [`serve.py`](serve.py) and [`pretty_log.py`](pretty_log.py) (deployment and logging).
 Unlike previously, I didn't write a lot of code. I basically was telling Claude what to do and what I wanted for the files.
 I had to change a lot of stuff like the output format and adding flags to turn off logging, log naming convention style, prettifying the output, etc. 
 I should have scoped better before I started because the python files and the RUNNING.md documentation for it took many many hours. 
