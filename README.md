@@ -1079,7 +1079,10 @@ Files changed for the capstone. Note: the wording is directly from the instructi
 * `README.md`: Nine sections added under Capstone
 * At least eight new commits from this unit, with [`criteria.md`](criteria.md) committed before any results, and both of those commits named in their messages
 
-* [`serve.py.`](serve.py) - for logging 
+Additional changes: 
+* [`serve.py.`](serve.py) - for logging - logs requests directly to a file on server startup.
+* [`pretty_log.py`](pretty_log.py) - code to help turn the logging more readable 
+* [`logs`](logs/) - log outputs stored in this folder 
 
 ## The Shape
 
@@ -1092,6 +1095,8 @@ I am choosing **shape A**. According to the instructions:
 > A — Deploy and instrument. Take a system that only ever ran on your laptop and put it somewhere it runs on its own, with logging and measurement around it. The extension is the operational layer: the run path, the instrumentation, and the numbers that come out of it.
 >
 > Whichever you pick, all three still deploy and instrument — shape A just makes that the whole job, while B and C carry it alongside. The run path and the log are required in every case.
+
+* I ended up also hardening against failiure for adding host and flags. 
 
 ### Out of Scope
 
