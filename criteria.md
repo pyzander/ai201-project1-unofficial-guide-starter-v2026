@@ -184,6 +184,8 @@ I am hoping it gets handled by the starter code reformatted below.
 
 # 2. Run stays under 800 tokens (9/10 times) 
 
+Originally, I actually wrote 1000 but I felt like it was too loose. 
+
 My tokens toal of input and ouput averaged 822 so I think this one is a miss and I think I would need to do different ways to reduce the amount of tokens. 
 
 # 3. Live endpoint answers have a latency of under 2 seconds (9/10 times) 
